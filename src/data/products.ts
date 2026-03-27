@@ -132,7 +132,7 @@ export const products: Product[] = [
     name: 'Шкатулка из оникса',
     slug: 'shkatulka-oniks',
     price: 150,
-    images: ['/images/product-4.png', '/images/product-4-2.png'],
+    images: ['/images/product-4.png'],
     category: 'souvenirs',
     stone: {
       name: 'Оникс',
@@ -180,7 +180,7 @@ export const products: Product[] = [
     name: 'Браслет из тигрового глаза',
     slug: 'braslet-tigrovyj-glaz',
     price: 65,
-    images: ['/images/product-6.png', '/images/product-6-2.png'],
+    images: ['/images/product-6.png'],
     category: 'jewelry',
     stone: {
       name: 'Тигровый глаз',
@@ -228,7 +228,7 @@ export const products: Product[] = [
     slug: 'chasy-nastennye-agat',
     price: 320,
     oldPrice: 380,
-    images: ['/images/product-8.png', '/images/product-8-2.png'],
+    images: ['/images/product-8.png'],
     category: 'clocks',
     stone: {
       name: 'Агат',
