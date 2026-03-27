@@ -20,6 +20,55 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Deployment notes (Vercel / Render / Neon)
+
+### Current architecture
+
+- This project is a **Next.js App Router storefront**.
+- Product catalog and blog content are currently stored in local TypeScript files:
+  - `src/data/products.ts`
+  - `src/data/blog.ts`
+- Cart/favorites state is client-side in Zustand with browser persistence (`localStorage`).
+- There are no API routes, no server actions, and no database adapter in the current codebase.
+
+### Do you need Neon database now?
+
+**Short answer:** not for the current version.
+
+You only need Neon (or any DB) if you plan to add:
+- admin panel / CMS for editing catalog and blog;
+- real checkout/orders/users;
+- inventory/stock sync;
+- analytics or event storage on the backend.
+
+For a static/demo storefront, Vercel or Render works without a database.
+
+### Deploy to Vercel (recommended for Next.js)
+
+1. Push repository to GitHub/GitLab/Bitbucket.
+2. In Vercel: **New Project** -> import repository.
+3. Build settings (usually auto-detected):
+   - Build command: `npm run build`
+   - Output: Next.js default
+4. Set Node version to modern LTS (20+ recommended).
+5. Deploy.
+
+Notes:
+- Vercel is the native platform for Next.js and gives best DX for App Router features.
+- If builds fail on Google Fonts fetch, consider self-hosting fonts via `next/font/local`.
+
+### Deploy to Render
+
+Use a **Web Service** (not Static Site), because this app is rendered by Next.js runtime.
+
+Suggested settings:
+- Environment: Node
+- Build command: `npm ci && npm run build`
+- Start command: `npm run start`
+- Node version: 20+
+
+Render can run this app successfully, but Next.js-specific platform optimizations are generally better on Vercel.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
