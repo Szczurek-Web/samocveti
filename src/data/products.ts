@@ -37,11 +37,11 @@ export interface Review {
 }
 
 export const categories = [
-  { id: 'paintings', name: 'Картины', slug: 'paintings', icon: '🖼️', image: '/images/cat-paintings.jpg' },
-  { id: 'clocks', name: 'Часы', slug: 'clocks', icon: '🕐', image: '/images/cat-clocks.jpg' },
-  { id: 'souvenirs', name: 'Сувениры', slug: 'souvenirs', icon: '🎁', image: '/images/cat-souvenirs.jpg' },
-  { id: 'jewelry', name: 'Украшения', slug: 'jewelry', icon: '💎', image: '/images/cat-jewelry.jpg' },
-  { id: 'interior', name: 'Интерьер', slug: 'interior', icon: '🏠', image: '/images/cat-interior.jpg' },
+  { id: 'paintings', name: 'Картины', slug: 'paintings', icon: '🖼️', image: '/images/cat-paintings.png' },
+  { id: 'clocks', name: 'Часы', slug: 'clocks', icon: '🕐', image: '/images/cat-clocks.png' },
+  { id: 'souvenirs', name: 'Сувениры', slug: 'souvenirs', icon: '🎁', image: '/images/cat-souvenirs.png' },
+  { id: 'jewelry', name: 'Украшения', slug: 'jewelry', icon: '💎', image: '/images/cat-jewelry.png' },
+  { id: 'interior', name: 'Интерьер', slug: 'interior', icon: '🏠', image: '/images/cat-interior.png' },
 ];
 
 export const quickPicks = [
@@ -59,7 +59,7 @@ export const products: Product[] = [
     slug: 'kartina-gornyj-pejzazh-yashma',
     price: 280,
     oldPrice: 350,
-    images: ['/images/product-1.jpg', '/images/product-1-2.jpg', '/images/product-1-3.jpg'],
+    images: ['/images/product-1.png'],
     category: 'paintings',
     stone: {
       name: 'Яшма',
@@ -83,7 +83,7 @@ export const products: Product[] = [
     name: 'Часы настольные из малахита',
     slug: 'chasy-nastolnye-malahit',
     price: 420,
-    images: ['/images/product-2.jpg', '/images/product-2-2.jpg'],
+    images: ['/images/product-2.png'],
     category: 'clocks',
     stone: {
       name: 'Малахит',
@@ -108,7 +108,7 @@ export const products: Product[] = [
     slug: 'busy-rozovyj-kvarc',
     price: 85,
     oldPrice: 110,
-    images: ['/images/product-3.jpg', '/images/product-3-2.jpg'],
+    images: ['/images/product-3.png'],
     category: 'jewelry',
     stone: {
       name: 'Розовый кварц',
@@ -132,7 +132,7 @@ export const products: Product[] = [
     name: 'Шкатулка из оникса',
     slug: 'shkatulka-oniks',
     price: 150,
-    images: ['/images/product-4.jpg', '/images/product-4-2.jpg'],
+    images: ['/images/product-4.png', '/images/product-4-2.png'],
     category: 'souvenirs',
     stone: {
       name: 'Оникс',
@@ -156,7 +156,7 @@ export const products: Product[] = [
     name: 'Панно "Дерево жизни" из аметиста',
     slug: 'panno-derevo-zhizni-ametist',
     price: 540,
-    images: ['/images/product-5.jpg', '/images/product-5-2.jpg'],
+    images: ['/images/product-5.png', '/images/product-5-2.png'],
     category: 'paintings',
     stone: {
       name: 'Аметист',
@@ -180,7 +180,7 @@ export const products: Product[] = [
     name: 'Браслет из тигрового глаза',
     slug: 'braslet-tigrovyj-glaz',
     price: 65,
-    images: ['/images/product-6.jpg', '/images/product-6-2.jpg'],
+    images: ['/images/product-6.png', '/images/product-6-2.png'],
     category: 'jewelry',
     stone: {
       name: 'Тигровый глаз',
@@ -204,7 +204,7 @@ export const products: Product[] = [
     name: 'Статуэтка "Слон" из нефрита',
     slug: 'statuetka-slon-nefrit',
     price: 195,
-    images: ['/images/product-7.jpg', '/images/product-7-2.jpg'],
+    images: ['/images/product-7.png'],
     category: 'souvenirs',
     stone: {
       name: 'Нефрит',
@@ -228,7 +228,7 @@ export const products: Product[] = [
     slug: 'chasy-nastennye-agat',
     price: 320,
     oldPrice: 380,
-    images: ['/images/product-8.jpg', '/images/product-8-2.jpg'],
+    images: ['/images/product-8.png', '/images/product-8-2.png'],
     category: 'clocks',
     stone: {
       name: 'Агат',
@@ -252,7 +252,7 @@ export const products: Product[] = [
     name: 'Подвеска-капля из лунного камня',
     slug: 'podveska-kaplya-lunnyj-kamen',
     price: 120,
-    images: ['/images/product-9.jpg', '/images/product-9-2.jpg'],
+    images: ['/images/product-9.png', '/images/product-9-2.png'],
     category: 'jewelry',
     stone: {
       name: 'Лунный камень',
@@ -276,7 +276,7 @@ export const products: Product[] = [
     name: 'Подсвечник из обсидиана',
     slug: 'podsvechnik-obsidian',
     price: 95,
-    images: ['/images/product-10.jpg', '/images/product-10-2.jpg'],
+    images: ['/images/product-10.png', '/images/product-10-2.png'],
     category: 'interior',
     stone: {
       name: 'Обсидиан',
@@ -299,7 +299,7 @@ export const products: Product[] = [
     name: 'Набор "Чайная церемония" из серпентина',
     slug: 'nabor-chajnaya-ceremoniya-serpentin',
     price: 380,
-    images: ['/images/product-11.jpg'],
+    images: ['/images/product-11.png'],
     category: 'souvenirs',
     stone: {
       name: 'Серпентин',
@@ -323,7 +323,7 @@ export const products: Product[] = [
     slug: 'sergi-kapli-rosy-hrizolit',
     price: 175,
     oldPrice: 220,
-    images: ['/images/product-12.jpg'],
+    images: ['/images/product-12.png'],
     category: 'jewelry',
     stone: {
       name: 'Хризолит',
@@ -347,7 +347,7 @@ export const products: Product[] = [
     name: 'Глобус из яшмы и офиокальцита',
     slug: 'globus-yashma-ofiokalcit',
     price: 890,
-    images: ['/images/product-13.jpg'],
+    images: ['/images/product-13.png'],
     category: 'interior',
     stone: {
       name: 'Яшма и офиокальцит',
@@ -370,7 +370,7 @@ export const products: Product[] = [
     name: 'Массажные шары из нефрита',
     slug: 'massazhnye-shary-nefrit',
     price: 55,
-    images: ['/images/product-14.jpg'],
+    images: ['/images/product-14.png'],
     category: 'souvenirs',
     stone: {
       name: 'Нефрит',
@@ -393,7 +393,7 @@ export const products: Product[] = [
     name: 'Ваза "Амфора" из оникса',
     slug: 'vaza-amfora-oniks',
     price: 260,
-    images: ['/images/product-15.jpg'],
+    images: ['/images/product-15.png'],
     category: 'interior',
     stone: {
       name: 'Оникс',
@@ -417,7 +417,7 @@ export const products: Product[] = [
     name: 'Кольцо-печатка из лазурита',
     slug: 'kolco-pechatka-lazurit',
     price: 145,
-    images: ['/images/product-16.jpg'],
+    images: ['/images/product-16.png'],
     category: 'jewelry',
     stone: {
       name: 'Лазурит',
@@ -441,7 +441,7 @@ export const products: Product[] = [
     name: 'Картина "Цветущая сакура" из коралла',
     slug: 'kartina-sakura-korall',
     price: 470,
-    images: ['/images/product-17.jpg'],
+    images: ['/images/product-17.png'],
     category: 'paintings',
     stone: {
       name: 'Коралл и перламутр',
@@ -464,7 +464,7 @@ export const products: Product[] = [
     name: 'Пирамида из шунгита',
     slug: 'piramida-shungit',
     price: 40,
-    images: ['/images/product-18.jpg'],
+    images: ['/images/product-18.png'],
     category: 'souvenirs',
     stone: {
       name: 'Шунгит',
@@ -488,7 +488,7 @@ export const products: Product[] = [
     slug: 'podstavki-bokalov-agat',
     price: 135,
     oldPrice: 165,
-    images: ['/images/product-19.jpg'],
+    images: ['/images/product-19.png'],
     category: 'interior',
     stone: {
       name: 'Агат',
@@ -512,7 +512,7 @@ export const products: Product[] = [
     name: 'Запонки из тигрового глаза',
     slug: 'zaponki-tigrovyj-glaz',
     price: 98,
-    images: ['/images/product-20.jpg'],
+    images: ['/images/product-20.png'],
     category: 'jewelry',
     stone: {
       name: 'Тигровый глаз',
