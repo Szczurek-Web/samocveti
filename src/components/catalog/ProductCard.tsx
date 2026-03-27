@@ -17,6 +17,12 @@ export default function ProductCard({ product }: ProductCardProps) {
   const addToast = useToastStore((s) => s.addToast);
   const fav = isFavorite(product.id);
 
+  // Social proof: simulate purchase count based on reviews
+  const purchaseCount = product.reviewCount * 5 + Math.floor(Number(product.id) * 7);
+
+  // Emotional hook: first sentence of stone symbolism
+  const emotionalHook = product.stone.symbolism.split('.')[0] + '.';
+
   return (
     <div
       className="group rounded-2xl overflow-hidden transition-all duration-300"
@@ -36,7 +42,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       }}
     >
       {/* Image */}
-      <Link href={`/product/${product.id}`} className="block no-underline">
+      <Link href={`/product/${product.slug}`} className="block no-underline">
         <div
           className="relative h-[240px] flex items-center justify-center overflow-hidden"
           style={{ background: 'var(--color-bg-hover)' }}
@@ -45,7 +51,10 @@ export default function ProductCard({ product }: ProductCardProps) {
 
           {/* Labels */}
           <div className="absolute top-3 left-3 flex flex-col gap-2">
-            {product.isNew && <span className="badge text-xs">Новинка</span>}
+            {product.isPopular && (
+              <span className="badge badge-hot text-xs">🔥 Хит</span>
+            )}
+            {product.isNew && <span className="badge text-xs">✨ Новинка</span>}
             {product.oldPrice && (
               <span className="badge-emerald badge text-xs">
                 -{Math.round((1 - product.price / product.oldPrice) * 100)}%
@@ -91,17 +100,27 @@ export default function ProductCard({ product }: ProductCardProps) {
 
       {/* Info */}
       <div className="p-5">
-        <div className="text-xs mb-2" style={{ color: 'var(--color-text-muted)' }}>
+        <div className="text-xs mb-1.5" style={{ color: 'var(--color-text-muted)' }}>
           {product.stone.name}
         </div>
         <Link
-          href={`/product/${product.id}`}
+          href={`/product/${product.slug}`}
           className="block no-underline text-sm font-medium mb-1 leading-snug hover:underline"
           style={{ color: 'var(--color-text)' }}
         >
           {product.name}
         </Link>
-        <div className="flex flex-wrap gap-1 mb-3">
+
+        {/* Emotional hook */}
+        <p
+          className="text-[11px] leading-relaxed mb-2"
+          style={{ color: 'var(--color-text-muted)', fontStyle: 'italic' }}
+        >
+          {emotionalHook}
+        </p>
+
+        {/* Suitable for tags */}
+        <div className="flex flex-wrap gap-1 mb-2">
           {product.suitableFor.slice(0, 2).map((tag) => (
             <span
               key={tag}
@@ -115,6 +134,13 @@ export default function ProductCard({ product }: ProductCardProps) {
             </span>
           ))}
         </div>
+
+        {/* Social proof */}
+        <div className="social-proof mb-3">
+          <span className="social-proof-dot" />
+          <span>Купили {purchaseCount} раз</span>
+        </div>
+
         <div className="flex items-center justify-between mt-auto">
           <div className="flex items-center gap-2">
             <span className="text-lg font-bold" style={{ color: 'var(--color-gold)' }}>

@@ -30,6 +30,8 @@ export default function ProductContent({ productSlug }: Props) {
   if (!product) return null;
 
   const fav = isFavorite(product.id);
+  const purchaseCount = product.reviewCount * 5 + Math.floor(Number(product.id) * 7);
+  const fakeStock = 3 + (Number(product.id) % 5);
 
   const handleAddToCart = () => {
     addItem({
@@ -53,7 +55,6 @@ export default function ProductContent({ productSlug }: Props) {
     .filter((p) => p.category === product.category && p.id !== product.id)
     .slice(0, 4);
 
-  // Cross-sell: different category, same audience
   const crossSellProducts = products
     .filter(
       (p) =>
@@ -62,6 +63,20 @@ export default function ProductContent({ productSlug }: Props) {
         p.suitableFor.some((s) => product.suitableFor.includes(s))
     )
     .slice(0, 4);
+
+  // Occasion icons mapping
+  const occasionIcons: Record<string, string> = {
+    'День рождения': '🎂',
+    'Юбилей': '🏆',
+    '8 марта': '🌷',
+    '23 февраля': '⭐',
+    '14 февраля': '💕',
+    'Новый год': '🎄',
+    'Новоселье': '🏠',
+    'Свадьба': '💍',
+    'Без повода': '💫',
+    'Повышение': '📈',
+  };
 
   return (
     <div style={{ background: 'var(--color-bg)', minHeight: '100vh', paddingTop: '100px' }}>
@@ -93,7 +108,8 @@ export default function ProductContent({ productSlug }: Props) {
             >
               <span className="text-8xl opacity-30">💎</span>
               <div className="absolute top-4 left-4 flex flex-col gap-2">
-                {product.isNew && <span className="badge">Новинка</span>}
+                {product.isPopular && <span className="badge badge-hot">🔥 Хит подарков</span>}
+                {product.isNew && <span className="badge">✨ Новинка</span>}
                 {product.oldPrice && (
                   <span className="badge-emerald badge">
                     -{Math.round((1 - product.price / product.oldPrice) * 100)}% скидка
@@ -142,7 +158,7 @@ export default function ProductContent({ productSlug }: Props) {
             <h1 className="text-2xl md:text-3xl font-bold mb-4" style={{ fontFamily: 'var(--font-serif)' }}>
               {product.name}
             </h1>
-            <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center gap-3 mb-4">
               <div className="flex gap-0.5">
                 {Array.from({ length: 5 }).map((_, j) => (
                   <span key={j} style={{ color: j < Math.floor(product.rating) ? 'var(--color-gold)' : 'var(--color-text-muted)' }}>
@@ -153,6 +169,36 @@ export default function ProductContent({ productSlug }: Props) {
               <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
                 {product.rating} ({product.reviewCount} отзывов)
               </span>
+            </div>
+
+            {/* Social proof + urgency */}
+            <div className="flex flex-wrap items-center gap-3 mb-6">
+              <div className="social-proof">
+                <span className="social-proof-dot" />
+                <span>Купили {purchaseCount} раз</span>
+              </div>
+              <span
+                className="text-[11px] px-2.5 py-1 rounded-full"
+                style={{
+                  background: 'rgba(251, 146, 60, 0.1)',
+                  color: '#fb923c',
+                  border: '1px solid rgba(251, 146, 60, 0.2)',
+                }}
+              >
+                Осталось {fakeStock} шт
+              </span>
+              {product.isPopular && (
+                <span
+                  className="text-[11px] px-2.5 py-1 rounded-full"
+                  style={{
+                    background: 'rgba(239, 68, 68, 0.1)',
+                    color: '#f87171',
+                    border: '1px solid rgba(239, 68, 68, 0.2)',
+                  }}
+                >
+                  Популярный товар
+                </span>
+              )}
             </div>
 
             <div className="flex items-center gap-4 mb-8">
@@ -227,40 +273,96 @@ export default function ProductContent({ productSlug }: Props) {
           </div>
         </div>
 
-        {/* Stone section */}
+        {/* ===== STONE MEANING SECTION ===== */}
         <div
-          className="p-8 md:p-12 rounded-2xl mb-16"
+          className="p-8 md:p-12 rounded-2xl mb-10"
           style={{
             background: 'linear-gradient(135deg, var(--color-bg-card), var(--color-bg-elevated))',
             border: '1px solid var(--color-border)',
+            animation: 'fadeIn 0.6s ease-out',
           }}
         >
           <div className="max-w-3xl mx-auto text-center">
             <span className="text-4xl mb-4 block">💎</span>
             <h2 className="text-2xl font-bold mb-2" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-gold)' }}>
-              {product.stone.name}
+              Смысл изделия — {product.stone.name}
             </h2>
+            <p className="text-sm mb-8" style={{ color: 'var(--color-text-muted)' }}>
+              Каждый камень несёт в себе особое значение
+            </p>
             <div className="divider my-6" />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
-              <div>
-                <h4 className="text-xs font-semibold tracking-wider uppercase mb-3" style={{ color: 'var(--color-text-muted)' }}>
-                  Свойства
-                </h4>
-                <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
-                  {product.stone.properties}
-                </p>
-              </div>
-              <div>
-                <h4 className="text-xs font-semibold tracking-wider uppercase mb-3" style={{ color: 'var(--color-text-muted)' }}>
-                  Символика
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+              <div className="p-6 rounded-xl" style={{ background: 'rgba(212,168,83,0.04)', border: '1px solid rgba(212,168,83,0.1)' }}>
+                <span className="text-3xl block mb-3">🛡️</span>
+                <h4 className="text-xs font-semibold tracking-wider uppercase mb-3" style={{ color: 'var(--color-gold)' }}>
+                  Защита
                 </h4>
                 <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
                   {product.stone.symbolism}
                 </p>
               </div>
+              <div className="p-6 rounded-xl" style={{ background: 'rgba(45,107,79,0.04)', border: '1px solid rgba(45,107,79,0.1)' }}>
+                <span className="text-3xl block mb-3">⚡</span>
+                <h4 className="text-xs font-semibold tracking-wider uppercase mb-3" style={{ color: 'var(--color-emerald-light)' }}>
+                  Энергия
+                </h4>
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
+                  {product.stone.properties}
+                </p>
+              </div>
+              <div className="p-6 rounded-xl" style={{ background: 'rgba(139,34,82,0.04)', border: '1px solid rgba(139,34,82,0.1)' }}>
+                <span className="text-3xl block mb-3">🔮</span>
+                <h4 className="text-xs font-semibold tracking-wider uppercase mb-3" style={{ color: '#c084a8' }}>
+                  Символика
+                </h4>
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
+                  {product.stone.symbolism.split('.').slice(1).join('.').trim() || product.stone.symbolism}
+                </p>
+              </div>
             </div>
           </div>
         </div>
+
+        {/* ===== WHEN TO GIVE SECTION ===== */}
+        {product.occasion && product.occasion.length > 0 && (
+          <div
+            className="p-8 md:p-10 rounded-2xl mb-16"
+            style={{
+              background: 'var(--color-bg-card)',
+              border: '1px solid var(--color-border)',
+            }}
+          >
+            <h2 className="text-2xl font-bold mb-2 text-center" style={{ fontFamily: 'var(--font-serif)' }}>
+              Когда дарить
+            </h2>
+            <p className="text-sm text-center mb-8" style={{ color: 'var(--color-text-muted)' }}>
+              Идеальный подарок для каждого повода
+            </p>
+            <div className="flex flex-wrap justify-center gap-3">
+              {product.occasion.map((occ) => (
+                <div
+                  key={occ}
+                  className="flex items-center gap-2 px-5 py-3 rounded-xl transition-all duration-200"
+                  style={{
+                    background: 'var(--color-bg-hover)',
+                    border: '1px solid var(--color-border)',
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-gold)';
+                    (e.currentTarget as HTMLElement).style.background = 'rgba(212,168,83,0.06)';
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)';
+                    (e.currentTarget as HTMLElement).style.background = 'var(--color-bg-hover)';
+                  }}
+                >
+                  <span className="text-xl">{occasionIcons[occ] || '🎁'}</span>
+                  <span className="text-sm font-medium" style={{ color: 'var(--color-text)' }}>{occ}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Related products */}
         {relatedProducts.length > 0 && (

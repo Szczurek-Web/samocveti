@@ -169,6 +169,27 @@ export default function HeroSection() {
           </Link>
         </div>
 
+        {/* Decision shortcut */}
+        <div
+          className="mt-6 text-center"
+          style={{
+            opacity: isVisible ? 1 : 0,
+            transform: isVisible ? 'translateY(0)' : 'translateY(10px)',
+            transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.6s',
+          }}
+        >
+          <Link
+            href="/gift-picker"
+            className="inline-flex items-center gap-2 text-sm no-underline transition-all duration-300"
+            style={{ color: 'var(--color-text-muted)' }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--color-gold)'; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--color-text-muted)'; }}
+          >
+            <span style={{ fontSize: '10px' }}>💡</span>
+            Не знаете, что подарить? Подберём за 30 секунд →
+          </Link>
+        </div>
+
         {/* Stats */}
         <div
           className="flex justify-center gap-8 md:gap-16 mt-16"
