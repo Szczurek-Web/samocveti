@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 interface FavoritesState {
   favorites: string[];
@@ -7,29 +8,24 @@ interface FavoritesState {
   clearFavorites: () => void;
 }
 
-export const useFavoritesStore = create<FavoritesState>((set, get) => ({
-  favorites:
-    typeof window !== 'undefined'
-      ? JSON.parse(localStorage.getItem('samocveti-favorites') || '[]')
-      : [],
+export const useFavoritesStore = create<FavoritesState>()(
+  persist(
+    (set, get) => ({
+      favorites: [],
 
-  toggleFavorite: (id) =>
-    set((state) => {
-      const next = state.favorites.includes(id)
-        ? state.favorites.filter((fid) => fid !== id)
-        : [...state.favorites, id];
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('samocveti-favorites', JSON.stringify(next));
-      }
-      return { favorites: next };
+      toggleFavorite: (id) =>
+        set((state) => ({
+          favorites: state.favorites.includes(id)
+            ? state.favorites.filter((fid) => fid !== id)
+            : [...state.favorites, id],
+        })),
+
+      isFavorite: (id) => get().favorites.includes(id),
+
+      clearFavorites: () => set({ favorites: [] }),
     }),
-
-  isFavorite: (id) => get().favorites.includes(id),
-
-  clearFavorites: () => {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('samocveti-favorites');
+    {
+      name: 'samocveti-favorites',
     }
-    set({ favorites: [] });
-  },
-}));
+  )
+);

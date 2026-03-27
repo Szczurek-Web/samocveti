@@ -1,23 +1,24 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 interface RecentState {
   recentIds: string[];
   addRecent: (id: string) => void;
 }
 
-export const useRecentStore = create<RecentState>((set) => ({
-  recentIds:
-    typeof window !== 'undefined'
-      ? JSON.parse(localStorage.getItem('samocveti-recent') || '[]')
-      : [],
+export const useRecentStore = create<RecentState>()(
+  persist(
+    (set) => ({
+      recentIds: [],
 
-  addRecent: (id) =>
-    set((state) => {
-      const filtered = state.recentIds.filter((rid) => rid !== id);
-      const next = [id, ...filtered].slice(0, 8);
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('samocveti-recent', JSON.stringify(next));
-      }
-      return { recentIds: next };
+      addRecent: (id) =>
+        set((state) => {
+          const filtered = state.recentIds.filter((rid) => rid !== id);
+          return { recentIds: [id, ...filtered].slice(0, 8) };
+        }),
     }),
-}));
+    {
+      name: 'samocveti-recent',
+    }
+  )
+);

@@ -5,6 +5,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import FloatingMessenger from "@/components/ui/FloatingMessenger";
 import ToastContainer from "@/components/ui/ToastContainer";
+import ErrorBoundary from "@/components/ui/ErrorBoundary";
 
 const inter = Inter({
   subsets: ["latin", "cyrillic"],
@@ -19,6 +20,7 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://samocveti.by"),
   title: "Samocveti — Подарки из натурального камня",
   description:
     "Оригинальные подарки из натурального камня. Картины, часы, украшения, сувениры. Уникальные изделия ручной работы для особых случаев.",
@@ -36,6 +38,7 @@ export const metadata: Metadata = {
       "Уникальные изделия ручной работы из натурального камня для особых случаев",
     type: "website",
     locale: "ru_BY",
+    siteName: "Samocveti",
   },
 };
 
@@ -48,7 +51,9 @@ export default function RootLayout({
     <html lang="ru" className={`${inter.variable} ${playfair.variable}`}>
       <body>
         <Header />
-        <main className="min-h-screen">{children}</main>
+        <ErrorBoundary>
+          <main className="min-h-screen">{children}</main>
+        </ErrorBoundary>
         <Footer />
         <FloatingMessenger />
         <ToastContainer />

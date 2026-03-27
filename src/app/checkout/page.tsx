@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useCartStore } from '@/store/cartStore';
 import { formatPrice } from '@/lib/utils';
@@ -9,6 +9,7 @@ export default function CheckoutPage() {
   const { items, getTotal, clearCart } = useCartStore();
   const [mounted, setMounted] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [delivery, setDelivery] = useState<'delivery' | 'pickup'>('delivery');
   const [formData, setFormData] = useState({
     name: '',
@@ -62,11 +63,16 @@ export default function CheckoutPage() {
     );
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitted(true);
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    // Simulate order processing (replace with real API call)
+    await new Promise((resolve) => setTimeout(resolve, 1500));
     clearCart();
-  };
+    setIsSubmitting(false);
+    setIsSubmitted(true);
+  }, [isSubmitting, clearCart]);
 
   const inputStyle = {
     background: 'var(--color-bg-hover)',
@@ -241,8 +247,16 @@ export default function CheckoutPage() {
                   <span style={{ color: 'var(--color-gold)' }}>{formatPrice(getTotal())}</span>
                 </div>
 
-                <button type="submit" className="btn-primary w-full py-4 text-base">
-                  Подтвердить заказ
+                <button
+                  type="submit"
+                  className="btn-primary w-full py-4 text-base"
+                  disabled={isSubmitting}
+                  style={{
+                    opacity: isSubmitting ? 0.7 : 1,
+                    cursor: isSubmitting ? 'not-allowed' : undefined,
+                  }}
+                >
+                  {isSubmitting ? '⏳ Оформляем заказ...' : 'Подтвердить заказ'}
                 </button>
 
                 <p className="text-[11px] text-center mt-4" style={{ color: 'var(--color-text-muted)' }}>
