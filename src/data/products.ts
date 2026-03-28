@@ -156,7 +156,7 @@ export const products: Product[] = [
     name: 'Панно "Дерево жизни" из аметиста',
     slug: 'panno-derevo-zhizni-ametist',
     price: 540,
-    images: ['/images/product-5.png', '/images/product-5-2.png'],
+    images: ['/images/product-5.png'],
     category: 'paintings',
     stone: {
       name: 'Аметист',
@@ -252,7 +252,7 @@ export const products: Product[] = [
     name: 'Подвеска-капля из лунного камня',
     slug: 'podveska-kaplya-lunnyj-kamen',
     price: 120,
-    images: ['/images/product-9.png', '/images/product-9-2.png'],
+    images: ['/images/product-9.png'],
     category: 'jewelry',
     stone: {
       name: 'Лунный камень',
@@ -276,7 +276,7 @@ export const products: Product[] = [
     name: 'Подсвечник из обсидиана',
     slug: 'podsvechnik-obsidian',
     price: 95,
-    images: ['/images/product-10.png', '/images/product-10-2.png'],
+    images: ['/images/product-10.png'],
     category: 'interior',
     stone: {
       name: 'Обсидиан',
