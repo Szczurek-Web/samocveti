@@ -54,12 +54,20 @@ export default function PopularProducts() {
               }}
             >
               {/* Image area */}
-              <Link href={`/product/${product.id}`} className="block no-underline">
+              <Link href={`/product/${product.slug}`} className="block no-underline">
                 <div
-                  className="relative h-[220px] flex items-center justify-center overflow-hidden"
+                  className="relative h-[220px] flex items-center justify-center overflow-hidden group"
                   style={{ background: 'var(--color-bg-hover)' }}
                 >
-                  <span className="text-6xl opacity-40">💎</span>
+                  <div
+                    className="absolute inset-0 transition-transform duration-700 group-hover:scale-110"
+                    style={{
+                      backgroundImage: `url(${product.images[0]})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors duration-300" />
                   {/* Labels */}
                   <div className="absolute top-3 left-3 flex flex-col gap-2">
                     {product.isNew && <span className="badge text-xs">Новинка</span>}
@@ -89,7 +97,7 @@ export default function PopularProducts() {
                   {product.stone.name}
                 </div>
                 <Link
-                  href={`/product/${product.id}`}
+                  href={`/product/${product.slug}`}
                   className="block no-underline text-sm font-medium mb-3 leading-snug"
                   style={{ color: 'var(--color-text)' }}
                 >
