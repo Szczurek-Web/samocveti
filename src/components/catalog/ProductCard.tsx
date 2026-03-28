@@ -47,7 +47,17 @@ export default function ProductCard({ product }: ProductCardProps) {
           className="relative h-[240px] flex items-center justify-center overflow-hidden"
           style={{ background: 'var(--color-bg-hover)' }}
         >
-          <span className="text-6xl opacity-30">💎</span>
+          {/* Real product image */}
+          <div
+            className="absolute inset-0 transition-transform duration-700 group-hover:scale-110"
+            style={{
+              backgroundImage: `url(${product.images[0]})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
+          />
+          {/* Overlay for better text readability if needed, or just for style */}
+          <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors duration-300" />
 
           {/* Labels */}
           <div className="absolute top-3 left-3 flex flex-col gap-2">

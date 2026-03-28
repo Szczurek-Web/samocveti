@@ -66,12 +66,19 @@ export default function CartPage() {
                   border: '1px solid var(--color-border)',
                 }}
               >
-                {/* Image placeholder */}
+                {/* Item Thumbnail */}
                 <div
-                  className="w-24 h-24 flex-shrink-0 rounded-xl flex items-center justify-center"
-                  style={{ background: 'var(--color-bg-hover)' }}
+                  className="w-24 h-24 flex-shrink-0 rounded-xl overflow-hidden relative"
+                  style={{ background: 'var(--color-bg-hover)', border: '1px solid var(--color-border)' }}
                 >
-                  <span className="text-3xl opacity-40">💎</span>
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      backgroundImage: `url(${item.image})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                    }}
+                  />
                 </div>
 
                 {/* Info */}

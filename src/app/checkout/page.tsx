@@ -492,10 +492,17 @@ export default function CheckoutPage() {
                 {items.map((item) => (
                   <div key={item.id} className="flex gap-3 items-center">
                     <div
-                      className="w-12 h-12 flex-shrink-0 rounded-lg flex items-center justify-center"
-                      style={{ background: 'var(--color-bg-hover)' }}
+                      className="w-12 h-12 flex-shrink-0 rounded-lg overflow-hidden relative"
+                      style={{ background: 'var(--color-bg-hover)', border: '1px solid var(--color-border)' }}
                     >
-                      <span className="text-lg opacity-40">💎</span>
+                      <div
+                        className="absolute inset-0"
+                        style={{
+                          backgroundImage: `url(${item.image})`,
+                          backgroundSize: 'cover',
+                          backgroundPosition: 'center',
+                        }}
+                      />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="text-sm truncate" style={{ color: 'var(--color-text-secondary)' }}>

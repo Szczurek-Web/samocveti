@@ -99,14 +99,23 @@ export default function ProductContent({ productSlug }: Props) {
           {/* Gallery */}
           <div>
             <div
-              className="relative rounded-2xl overflow-hidden mb-4 flex items-center justify-center"
+              className="relative rounded-2xl overflow-hidden mb-4 flex items-center justify-center group"
               style={{
                 background: 'var(--color-bg-card)',
                 border: '1px solid var(--color-border)',
                 height: '500px',
               }}
             >
-              <span className="text-8xl opacity-30">💎</span>
+              {/* Main product image overlay */}
+              <div
+                className="absolute inset-0 transition-transform duration-1000 group-hover:scale-110"
+                style={{
+                  backgroundImage: `url(${product.images[0]})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }}
+              />
+              <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-500" />
               <div className="absolute top-4 left-4 flex flex-col gap-2">
                 {product.isPopular && <span className="badge badge-hot">🔥 Хит подарков</span>}
                 {product.isNew && <span className="badge">✨ Новинка</span>}
@@ -144,7 +153,16 @@ export default function ProductContent({ productSlug }: Props) {
                     border: i === 0 ? '2px solid var(--color-gold)' : '1px solid var(--color-border)',
                   }}
                 >
-                  <span className="text-2xl opacity-40">💎</span>
+                  <div
+                    className="absolute inset-2"
+                    style={{
+                      backgroundImage: `url(${product.images[0]})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      borderRadius: '8px',
+                      opacity: 0.8,
+                    }}
+                  />
                 </div>
               ))}
             </div>
@@ -380,8 +398,18 @@ export default function ProductContent({ productSlug }: Props) {
                   onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)'; (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-card)'; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLElement).style.boxShadow = 'none'; }}
                 >
-                  <div className="h-[180px] flex items-center justify-center" style={{ background: 'var(--color-bg-hover)' }}>
-                    <span className="text-5xl opacity-30">💎</span>
+                  <div
+                    className="h-[180px] relative overflow-hidden flex items-center justify-center"
+                    style={{ background: 'var(--color-bg-hover)' }}
+                  >
+                    <div
+                      className="absolute inset-0 transition-transform duration-500 hover:scale-110"
+                      style={{
+                        backgroundImage: `url(${p.images[0]})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                      }}
+                    />
                   </div>
                   <div className="p-4">
                     <div className="text-xs mb-1" style={{ color: 'var(--color-text-muted)' }}>{p.stone.name}</div>
@@ -413,8 +441,18 @@ export default function ProductContent({ productSlug }: Props) {
                   onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)'; (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-card)'; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLElement).style.boxShadow = 'none'; }}
                 >
-                  <div className="h-[180px] flex items-center justify-center" style={{ background: 'var(--color-bg-hover)' }}>
-                    <span className="text-5xl opacity-30">💎</span>
+                  <div
+                    className="h-[180px] relative overflow-hidden flex items-center justify-center"
+                    style={{ background: 'var(--color-bg-hover)' }}
+                  >
+                    <div
+                      className="absolute inset-0 transition-transform duration-500 hover:scale-110"
+                      style={{
+                        backgroundImage: `url(${p.images[0]})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                      }}
+                    />
                   </div>
                   <div className="p-4">
                     <div className="text-xs mb-1" style={{ color: 'var(--color-text-muted)' }}>{p.stone.name}</div>
@@ -443,8 +481,18 @@ export default function ProductContent({ productSlug }: Props) {
                   onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)'; (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-card)'; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLElement).style.boxShadow = 'none'; }}
                 >
-                  <div className="h-[140px] flex items-center justify-center" style={{ background: 'var(--color-bg-hover)' }}>
-                    <span className="text-4xl opacity-30">💎</span>
+                  <div
+                    className="h-[140px] relative overflow-hidden flex items-center justify-center"
+                    style={{ background: 'var(--color-bg-hover)' }}
+                  >
+                    <div
+                      className="absolute inset-0 transition-transform duration-500 hover:scale-110"
+                      style={{
+                        backgroundImage: `url(${p.images[0]})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                      }}
+                    />
                   </div>
                   <div className="p-4">
                     <div className="text-xs mb-1" style={{ color: 'var(--color-text-muted)' }}>{p.stone.name}</div>
