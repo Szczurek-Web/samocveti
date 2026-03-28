@@ -143,26 +143,27 @@ export default function ProductContent({ productSlug }: Props) {
                 {fav ? '♥' : '♡'}
               </button>
             </div>
-            <div className="flex gap-3">
-              {product.images.map((_, i) => (
+            <div className="flex gap-3 mt-4">
+              {product.images.map((img, i) => (
                 <div
                   key={i}
-                  className="w-20 h-20 rounded-xl flex items-center justify-center cursor-pointer transition-all duration-200"
+                  className="relative w-24 h-24 rounded-xl flex items-center justify-center cursor-pointer transition-all duration-200 overflow-hidden"
                   style={{
                     background: 'var(--color-bg-card)',
                     border: i === 0 ? '2px solid var(--color-gold)' : '1px solid var(--color-border)',
                   }}
                 >
                   <div
-                    className="absolute inset-2"
+                    className="absolute inset-0 transition-transform duration-300 hover:scale-110"
                     style={{
-                      backgroundImage: `url(${product.images[0]})`,
+                      backgroundImage: `url(${img})`,
                       backgroundSize: 'cover',
                       backgroundPosition: 'center',
-                      borderRadius: '8px',
-                      opacity: 0.8,
                     }}
                   />
+                  {i !== 0 && (
+                    <div className="absolute inset-0 bg-black/20 hover:bg-black/0 transition-colors duration-300" />
+                  )}
                 </div>
               ))}
             </div>
