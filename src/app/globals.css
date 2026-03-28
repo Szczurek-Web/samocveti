@@ -65,6 +65,16 @@
   box-sizing: border-box;
 }
 
+/* iOS/Webkit fix for border-radius + overflow-hidden + transform scale bugs */
+.overflow-hidden.rounded-2xl,
+.overflow-hidden.rounded-xl,
+.overflow-hidden.rounded-lg {
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  mask-image: radial-gradient(white, black);
+  isolation: isolate;
+  transform: translateZ(0);
+}
+
 html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;

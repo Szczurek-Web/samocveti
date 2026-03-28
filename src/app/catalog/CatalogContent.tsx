@@ -70,25 +70,34 @@ export default function CatalogContent() {
       >
         {label}
       </label>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full px-4 py-3 rounded-xl text-sm"
-        style={{
-          background: 'var(--color-bg-hover)',
-          color: 'var(--color-text)',
-          border: '1px solid var(--color-border)',
-          outline: 'none',
-          cursor: 'pointer',
-        }}
-      >
-        <option value="">Все</option>
-        {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
-          </option>
-        ))}
-      </select>
+      <div className="relative">
+        <select
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full px-4 py-3 rounded-xl text-sm appearance-none"
+          style={{
+            background: 'var(--color-bg-hover)',
+            color: 'var(--color-text)',
+            border: '1px solid var(--color-border)',
+            outline: 'none',
+            cursor: 'pointer',
+          }}
+          onFocus={(e) => (e.currentTarget.style.borderColor = 'var(--color-gold)')}
+          onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--color-border)')}
+        >
+          <option value="">Все</option>
+          {options.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+        <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none" style={{ color: 'var(--color-text-muted)' }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+      </div>
     </div>
   );
 
@@ -214,23 +223,32 @@ export default function CatalogContent() {
                 <span className="text-xs hidden sm:inline" style={{ color: 'var(--color-text-muted)' }}>
                   Сортировка:
                 </span>
-                <select
-                  value={sort}
-                  onChange={(e) => setSort(e.target.value as SortOption)}
-                  className="px-4 py-2 rounded-xl text-sm"
-                  style={{
-                    background: 'var(--color-bg-card)',
-                    color: 'var(--color-text)',
-                    border: '1px solid var(--color-border)',
-                    outline: 'none',
-                    cursor: 'pointer',
-                  }}
-                >
-                  <option value="popular">Популярные</option>
-                  <option value="new">Новинки</option>
-                  <option value="price-asc">Цена ↑</option>
-                  <option value="price-desc">Цена ↓</option>
-                </select>
+                <div className="relative">
+                  <select
+                    value={sort}
+                    onChange={(e) => setSort(e.target.value as SortOption)}
+                    className="pl-4 pr-10 py-2 rounded-xl text-sm appearance-none"
+                    style={{
+                      background: 'var(--color-bg-card)',
+                      color: 'var(--color-text)',
+                      border: '1px solid var(--color-border)',
+                      outline: 'none',
+                      cursor: 'pointer',
+                    }}
+                    onFocus={(e) => (e.currentTarget.style.borderColor = 'var(--color-gold)')}
+                    onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--color-border)')}
+                  >
+                    <option value="popular">Популярные</option>
+                    <option value="new">Новинки</option>
+                    <option value="price-asc">Цена ↑</option>
+                    <option value="price-desc">Цена ↓</option>
+                  </select>
+                  <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none" style={{ color: 'var(--color-text-muted)' }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </div>
+                </div>
               </div>
             </div>
 

@@ -171,15 +171,19 @@ export default function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="px-4 py-3 rounded-xl text-sm font-medium no-underline transition-colors duration-200"
-                style={{ color: 'var(--color-text-secondary)' }}
+                className="px-5 py-3 rounded-xl text-lg no-underline transition-colors duration-200"
+                style={{
+                  color: 'var(--color-text)',
+                  fontFamily: 'var(--font-serif)',
+                  fontSize: '1.15rem'
+                }}
                 onClick={() => setIsMobileMenuOpen(false)}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.color = 'var(--color-gold)';
                   e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.color = 'var(--color-text-secondary)';
+                  e.currentTarget.style.color = 'var(--color-text)';
                   e.currentTarget.style.background = 'transparent';
                 }}
               >
@@ -188,8 +192,12 @@ export default function Header() {
             ))}
             <Link
               href="/favorites"
-              className="px-4 py-3 rounded-xl text-sm font-medium no-underline transition-colors duration-200"
-              style={{ color: 'var(--color-text-secondary)' }}
+              className="px-5 py-3 rounded-xl text-lg no-underline transition-colors duration-200 mt-2"
+              style={{
+                color: 'var(--color-text)',
+                fontFamily: 'var(--font-serif)',
+                fontSize: '1.15rem'
+              }}
               onClick={() => setIsMobileMenuOpen(false)}
             >
               ♡ Избранное {mounted && favCount > 0 && `(${favCount})`}
