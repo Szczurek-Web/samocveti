@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { formatPrice } from '@/lib/utils';
 import { useCartStore } from '@/store/cartStore';
 import { useFavoritesStore } from '@/store/favoritesStore';
@@ -48,16 +49,15 @@ export default function ProductCard({ product }: ProductCardProps) {
           style={{ background: 'var(--color-bg-hover)' }}
         >
           {/* Real product image */}
-          <div
-            className="absolute inset-0 transition-transform duration-700 group-hover:scale-110"
-            style={{
-              backgroundImage: `url(${product.images[0]})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
+          <Image
+            src={product.images[0]}
+            alt={product.name}
+            fill
+            className="object-cover transition-transform duration-700 group-hover:scale-110"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
           {/* Overlay for better text readability if needed, or just for style */}
-          <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors duration-300" />
+          <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors duration-300 pointer-events-none" />
 
           {/* Labels */}
           <div className="absolute top-3 left-3 flex flex-col gap-2">

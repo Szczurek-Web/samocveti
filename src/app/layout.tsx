@@ -3,9 +3,8 @@ import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import FloatingMessenger from "@/components/ui/FloatingMessenger";
-import ToastContainer from "@/components/ui/ToastContainer";
 import ErrorBoundary from "@/components/ui/ErrorBoundary";
+import ClientWidgets from "@/components/ui/ClientWidgets";
 
 const inter = Inter({
   subsets: ["latin", "cyrillic"],
@@ -55,8 +54,7 @@ export default function RootLayout({
           <main className="min-h-screen">{children}</main>
         </ErrorBoundary>
         <Footer />
-        <FloatingMessenger />
-        <ToastContainer />
+        <ClientWidgets />
       </body>
     </html>
   );

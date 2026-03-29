@@ -1,19 +1,34 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getProductBySlug, products } from '@/data/products';
 import ProductContent from './ProductContent';
+import { prisma } from '@/lib/db';
+import type { Product } from '@/data/products';
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
+export const revalidate = 3600;
+
+function mapProduct(p: any): Product {
+  return {
+    ...p,
+    stone: p.stone as any,
+    description: p.description as any,
+    oldPrice: p.oldPrice || undefined,
+    type: p.type || undefined,
+  };
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const productRaw = await prisma.product.findUnique({ where: { slug } });
 
-  if (!product) {
+  if (!productRaw) {
     return { title: 'Товар не найден — Samocveti' };
   }
+
+  const product = mapProduct(productRaw);
 
   return {
     title: `${product.name} — купить в Samocveti`,
@@ -27,16 +42,37 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export async function generateStaticParams() {
-  return products.map((p) => ({ slug: p.slug }));
+  const products = await prisma.product.findMany({ select: { slug: true } });
+  return products.map((p: any) => ({ slug: p.slug }));
 }
 
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  
+  const productRaw = await prisma.product.findUnique({ where: { slug } });
+  if (!productRaw) notFound();
+  
+  const product = mapProduct(productRaw);
 
-  if (!product) {
-    notFound();
-  }
+  const relatedRaw = await prisma.product.findMany({
+    where: { categoryId: productRaw.categoryId, NOT: { id: productRaw.id } },
+    take: 4,
+  });
 
-  return <ProductContent productSlug={slug} />;
+  const allCrossRaw = await prisma.product.findMany({
+    where: { NOT: { id: productRaw.id, categoryId: productRaw.categoryId } },
+  });
+
+  // Filter cross-sell based on suitableFor overlap
+  const crossSellRaw = allCrossRaw
+    .filter((p: any) => p.suitableFor.some((s: string) => product.suitableFor.includes(s)))
+    .slice(0, 4);
+
+  return (
+    <ProductContent 
+      product={product} 
+      relatedProducts={relatedRaw.map(mapProduct)} 
+      crossSellProducts={crossSellRaw.map(mapProduct)} 
+    />
+  );
 }

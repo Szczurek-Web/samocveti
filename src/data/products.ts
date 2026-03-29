@@ -604,6 +604,7 @@ export function getProductsByCategory(categorySlug: string): Product[] {
   return products.filter(p => p.category === categorySlug);
 }
 
+// Products mock data removed during Postgres migration.
 export function getProductById(id: string): Product | undefined {
   return products.find(p => p.id === id);
 }

@@ -1,12 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import { getPopularProducts } from '@/data/products';
+import Image from 'next/image';
 import { formatPrice } from '@/lib/utils';
 import { useCartStore } from '@/store/cartStore';
+import type { Product } from '@/data/products';
 
-export default function PopularProducts() {
-  const products = getPopularProducts();
+interface PopularProductsProps {
+  products: Product[];
+}
+
+export default function PopularProducts({ products }: PopularProductsProps) {
   const addItem = useCartStore((s) => s.addItem);
 
   return (
@@ -59,15 +63,14 @@ export default function PopularProducts() {
                   className="relative h-[220px] flex items-center justify-center overflow-hidden group"
                   style={{ background: 'var(--color-bg-hover)' }}
                 >
-                  <div
-                    className="absolute inset-0 transition-transform duration-700 group-hover:scale-110"
-                    style={{
-                      backgroundImage: `url(${product.images[0]})`,
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center',
-                    }}
+                  <Image
+                    src={product.images[0]}
+                    alt={product.name}
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-110"
+                    sizes="(max-width: 768px) 100vw, 300px"
                   />
-                  <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors duration-300" />
+                  <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors duration-300 pointer-events-none" />
                   {/* Labels */}
                   <div className="absolute top-3 left-3 flex flex-col gap-2">
                     {product.isNew && <span className="badge text-xs">Новинка</span>}

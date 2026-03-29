@@ -1,8 +1,8 @@
 import type { MetadataRoute } from 'next';
-import { products } from '@/data/products';
+import { prisma } from '@/lib/db';
 import { blogPosts } from '@/data/blog';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://samocveti.by';
 
   const staticPages: MetadataRoute.Sitemap = [
@@ -16,7 +16,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/favorites`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.4 },
   ];
 
-  const productPages: MetadataRoute.Sitemap = products.map((product) => ({
+  const productsRaw = await prisma.product.findMany({ select: { slug: true } });
+
+  const productPages: MetadataRoute.Sitemap = productsRaw.map((product: any) => ({
     url: `${baseUrl}/product/${product.slug}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,

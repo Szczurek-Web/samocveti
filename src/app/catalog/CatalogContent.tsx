@@ -3,12 +3,17 @@
 import { useState, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { products, categories, stones, occasions, recipients } from '@/data/products';
+import { categories, stones, occasions, recipients } from '@/data/products';
+import type { Product } from '@/data/products';
 import ProductCard from '@/components/catalog/ProductCard';
 
 type SortOption = 'popular' | 'new' | 'price-asc' | 'price-desc';
 
-export default function CatalogContent() {
+interface CatalogContentProps {
+  products: Product[];
+}
+
+export default function CatalogContent({ products }: CatalogContentProps) {
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get('category') || '';
 
