@@ -2,104 +2,117 @@
 
 import { prisma } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
-import { guardAdminAction } from '@/lib/auth';
+import { requireAdminSession } from '@/lib/admin-auth';
 
-function revalidateAll() {
+async function guardAdminAction() {
+  await requireAdminSession({ onFail: 'throw' });
+}
+
+function getString(formData: FormData, key: string) {
+  return String(formData.get(key) ?? '').trim();
+}
+
+function getNumberOrNull(formData: FormData, key: string) {
+  const raw = getString(formData, key);
+  if (!raw) return null;
+  const n = Number(raw);
+  return Number.isFinite(n) ? n : null;
+}
+
+function parseList(value: string) {
+  return value
+    .split(/[\n,]/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function normalizeProductPayload(formData: FormData) {
+  const name = getString(formData, 'name');
+  const slug = getString(formData, 'slug');
+  const price = getNumberOrNull(formData, 'price') ?? 0;
+  const oldPrice = getNumberOrNull(formData, 'oldPrice');
+  const categoryId = getString(formData, 'categoryId');
+  const inStock = getNumberOrNull(formData, 'inStock') ?? 0;
+
+  const images = parseList(getString(formData, 'images'));
+  const tags = parseList(getString(formData, 'tags'));
+  const suitableFor = parseList(getString(formData, 'suitableFor'));
+  const occasion = parseList(getString(formData, 'occasion'));
+  const descriptionShort = parseList(getString(formData, 'descriptionShort'));
+
+  const stone = {
+    name: getString(formData, 'stoneName'),
+    properties: getString(formData, 'stoneProperties'),
+    symbolism: getString(formData, 'stoneSymbolism'),
+  };
+
+  const description = {
+    short: descriptionShort,
+    full: getString(formData, 'descriptionFull'),
+  };
+
+  return {
+    name,
+    slug,
+    price,
+    oldPrice,
+    categoryId,
+    inStock,
+    images,
+    tags,
+    suitableFor,
+    occasion,
+    stone,
+    description,
+    type: getString(formData, 'type') || null,
+    isNew: getString(formData, 'isNew') === 'on',
+    isPopular: getString(formData, 'isPopular') === 'on',
+  };
+}
+
+function revalidateProductPaths(slug: string) {
+  revalidatePath('/');
+  revalidatePath('/catalog');
+  revalidatePath('/admin');
+  revalidatePath(`/product/${slug}`);
+  revalidatePath(`/admin/product/${slug}`);
+}
+
+export async function createProduct(formData: FormData) {
+  const data = normalizeProductPayload(formData);
+
+  await prisma.product.create({ data });
+  revalidateProductPaths(data.slug);
+}
+
+export async function updateProduct(formData: FormData) {
+  const id = getString(formData, 'id');
+  const prevSlug = getString(formData, 'prevSlug');
+  const data = normalizeProductPayload(formData);
+
+  await prisma.product.update({
+    where: { id },
+    data,
+  });
+
+  revalidateProductPaths(data.slug);
+  if (prevSlug && prevSlug !== data.slug) {
+    revalidatePath(`/product/${prevSlug}`);
+    revalidatePath(`/admin/product/${prevSlug}`);
+  }
+}
+
+export async function deleteProduct(id: string) {
+  await guardAdminAction();
+
+  await prisma.product.delete({
+    where: { id },
+  });
+
   revalidatePath('/admin');
   revalidatePath('/catalog');
   revalidatePath('/');
 }
 
-export async function deleteProduct(id: string) {
-  await guardAdminAction();
-  await prisma.product.delete({ where: { id } });
-  revalidateAll();
-  return { success: true };
-}
-
-export async function createProduct(formData: FormData) {
-  await guardAdminAction();
-
-  const name = formData.get('name') as string;
-  const slug = formData.get('slug') as string;
-  const price = parseFloat(formData.get('price') as string);
-  const oldPrice = formData.get('oldPrice') ? parseFloat(formData.get('oldPrice') as string) : null;
-  const categoryId = formData.get('categoryId') as string;
-  const images = (formData.get('images') as string).split('\n').map(s => s.trim()).filter(Boolean);
-  const isNew = formData.get('isNew') === 'on';
-  const isPopular = formData.get('isPopular') === 'on';
-  const type = (formData.get('type') as string) || null;
-
-  const stone = {
-    name: formData.get('stoneName') as string || '',
-    symbolism: formData.get('stoneSymbolism') as string || '',
-    properties: formData.get('stoneProperties') as string || '',
-  };
-
-  const description = {
-    short: (formData.get('descriptionShort') as string || '').split('\n').filter(Boolean),
-    full: formData.get('descriptionFull') as string || '',
-  };
-
-  const tags = (formData.get('tags') as string || '').split(',').map(s => s.trim()).filter(Boolean);
-  const suitableFor = (formData.get('suitableFor') as string || '').split(',').map(s => s.trim()).filter(Boolean);
-  const occasion = (formData.get('occasion') as string || '').split(',').map(s => s.trim()).filter(Boolean);
-
-  await prisma.product.create({
-    data: {
-      name, slug, price, oldPrice,
-      images, categoryId,
-      isNew, isPopular, type,
-      stone: stone as any,
-      description: description as any,
-      tags, suitableFor, occasion,
-    },
-  });
-
-  revalidateAll();
-  return { success: true, slug };
-}
-
-export async function updateProduct(id: string, formData: FormData) {
-  await guardAdminAction();
-
-  const name = formData.get('name') as string;
-  const slug = formData.get('slug') as string;
-  const price = parseFloat(formData.get('price') as string);
-  const oldPrice = formData.get('oldPrice') ? parseFloat(formData.get('oldPrice') as string) : null;
-  const categoryId = formData.get('categoryId') as string;
-  const images = (formData.get('images') as string).split('\n').map(s => s.trim()).filter(Boolean);
-  const isNew = formData.get('isNew') === 'on';
-  const isPopular = formData.get('isPopular') === 'on';
-  const type = (formData.get('type') as string) || null;
-
-  const stone = {
-    name: formData.get('stoneName') as string || '',
-    symbolism: formData.get('stoneSymbolism') as string || '',
-    properties: formData.get('stoneProperties') as string || '',
-  };
-
-  const description = {
-    short: (formData.get('descriptionShort') as string || '').split('\n').filter(Boolean),
-    full: formData.get('descriptionFull') as string || '',
-  };
-
-  const tags = (formData.get('tags') as string || '').split(',').map(s => s.trim()).filter(Boolean);
-  const suitableFor = (formData.get('suitableFor') as string || '').split(',').map(s => s.trim()).filter(Boolean);
-  const occasion = (formData.get('occasion') as string || '').split(',').map(s => s.trim()).filter(Boolean);
-
-  await prisma.product.update({
-    where: { id },
-    data: {
-      name, slug, price, oldPrice,
-      images, categoryId,
-      isNew, isPopular, type,
-      stone: stone as any,
-      description: description as any,
-      tags, suitableFor, occasion,
-    },
-  });
-
-  revalidateAll();
-  return { success: true, slug };
-}
+// For all sensitive admin server actions (createProduct, updateProduct, etc.)
+// always call guardAdminAction() at the beginning of the action.
