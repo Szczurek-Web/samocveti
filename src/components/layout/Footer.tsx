@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 const footerLinks = {
   catalog: [
@@ -21,6 +22,9 @@ const footerLinks = {
 };
 
 export default function Footer() {
+  const pathname = usePathname();
+  if (pathname.startsWith('/admin')) return null;
+
   return (
     <footer
       style={{ background: 'var(--color-bg-card)', borderTop: '1px solid var(--color-border)' }}
