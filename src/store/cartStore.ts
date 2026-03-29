@@ -5,6 +5,7 @@ import { persist } from 'zustand/middleware';
 
 export interface CartItem {
   id: string;
+  slug: string;
   name: string;
   price: number;
   image: string;
@@ -68,6 +69,19 @@ export const useCartStore = create<CartState>()(
     }),
     {
       name: 'samocveti-cart',
+      version: 2,
+      migrate: (persistedState) => {
+        const state = persistedState as CartState | undefined;
+        if (!state?.items) return state as CartState;
+
+        return {
+          ...state,
+          items: state.items.map((item) => ({
+            ...item,
+            slug: item.slug ?? item.id,
+          })),
+        };
+      },
     }
   )
 );
