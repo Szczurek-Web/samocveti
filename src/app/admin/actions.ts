@@ -2,6 +2,11 @@
 
 import { prisma } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
+import { requireAdminSession } from '@/lib/admin-auth';
+
+async function guardAdminAction() {
+  await requireAdminSession({ onFail: 'throw' });
+}
 
 function getString(formData: FormData, key: string) {
   return String(formData.get(key) ?? '').trim();
@@ -98,6 +103,8 @@ export async function updateProduct(formData: FormData) {
 }
 
 export async function deleteProduct(id: string) {
+  await guardAdminAction();
+
   await prisma.product.delete({
     where: { id },
   });
@@ -106,3 +113,6 @@ export async function deleteProduct(id: string) {
   revalidatePath('/catalog');
   revalidatePath('/');
 }
+
+// For all sensitive admin server actions (createProduct, updateProduct, etc.)
+// always call guardAdminAction() at the beginning of the action.
