@@ -7,6 +7,7 @@ import { useToastStore } from '@/store/toastStore';
 
 interface ProductInfo {
   id: string;
+  slug: string;
   name: string;
   price: number;
   image: string;
@@ -22,6 +23,7 @@ export function useProductActions() {
     (product: ProductInfo) => {
       addItem({
         id: product.id,
+        slug: product.slug,
         name: product.name,
         price: product.price,
         image: product.image,
