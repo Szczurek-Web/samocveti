@@ -6,7 +6,7 @@ import PopularProducts from '@/components/home/PopularProducts';
 import Reviews from '@/components/home/Reviews';
 import ContactsSection from '@/components/home/ContactsSection';
 import { prisma } from '@/lib/db';
-import type { Product } from '@/data/products';
+import { mapDbProduct } from '@/lib/productMapper';
 
 export const revalidate = 3600;
 
@@ -16,13 +16,7 @@ export default async function Home() {
     take: 8,
   });
 
-  const popularProducts: Product[] = popularRaw.map((p: any) => ({
-    ...p,
-    stone: p.stone as any,
-    description: p.description as any,
-    oldPrice: p.oldPrice || undefined,
-    type: p.type || undefined,
-  }));
+  const popularProducts = popularRaw.map(mapDbProduct);
 
   return (
     <>

@@ -1,7 +1,5 @@
 'use client';
 
-import Link from 'next/link';
-
 export default function ContactsSection() {
   return (
     <section className="section" style={{ background: 'var(--color-bg-card)' }}>

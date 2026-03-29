@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export const metadata = {
   title: 'Admin Panel — Samocveti',
   robots: 'noindex, nofollow',
@@ -18,8 +20,8 @@ export default function AdminLayout({
           Samocveti Admin
         </div>
         <nav className="flex gap-4 text-sm">
-          <a href="/admin" className="hover:text-amber-500 transition">Товары</a>
-          <a href="/" className="text-gray-400 hover:text-white transition">Вернуться на сайт →</a>
+          <Link href="/admin" className="hover:text-amber-500 transition">Товары</Link>
+          <Link href="/" className="text-gray-400 hover:text-white transition">Вернуться на сайт →</Link>
         </nav>
       </header>
       <main className="p-6 max-w-7xl mx-auto">{children}</main>

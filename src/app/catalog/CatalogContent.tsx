@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
-import Link from 'next/link';
 import { categories, stones, occasions, recipients } from '@/data/products';
 import type { Product } from '@/data/products';
 import ProductCard from '@/components/catalog/ProductCard';
@@ -11,6 +10,54 @@ type SortOption = 'popular' | 'new' | 'price-asc' | 'price-desc';
 
 interface CatalogContentProps {
   products: Product[];
+}
+
+interface FilterSelectProps {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  options: { value: string; label: string }[];
+}
+
+function FilterSelect({ label, value, onChange, options }: FilterSelectProps) {
+  return (
+    <div className="mb-5">
+      <label
+        className="block text-xs font-semibold tracking-wider uppercase mb-2"
+        style={{ color: 'var(--color-text-secondary)' }}
+      >
+        {label}
+      </label>
+      <div className="relative">
+        <select
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full px-4 py-3 rounded-xl text-sm appearance-none"
+          style={{
+            background: 'var(--color-bg-hover)',
+            color: 'var(--color-text)',
+            border: '1px solid var(--color-border)',
+            outline: 'none',
+            cursor: 'pointer',
+          }}
+          onFocus={(e) => (e.currentTarget.style.borderColor = 'var(--color-gold)')}
+          onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--color-border)')}
+        >
+          <option value="">Все</option>
+          {options.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+        <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none" style={{ color: 'var(--color-text-muted)' }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function CatalogContent({ products }: CatalogContentProps) {
@@ -50,7 +97,7 @@ export default function CatalogContent({ products }: CatalogContentProps) {
     }
 
     return result;
-  }, [selectedCategory, selectedStone, selectedOccasion, selectedRecipient, priceRange, sort]);
+  }, [products, selectedCategory, selectedStone, selectedOccasion, selectedRecipient, priceRange, sort]);
 
   const clearFilters = () => {
     setSelectedCategory('');
@@ -61,50 +108,6 @@ export default function CatalogContent({ products }: CatalogContentProps) {
   };
 
   const hasActiveFilters = selectedCategory || selectedStone || selectedOccasion || selectedRecipient || priceRange[0] > 0 || priceRange[1] < 1000;
-
-  const FilterSelect = ({ label, value, onChange, options }: {
-    label: string;
-    value: string;
-    onChange: (v: string) => void;
-    options: { value: string; label: string }[];
-  }) => (
-    <div className="mb-5">
-      <label
-        className="block text-xs font-semibold tracking-wider uppercase mb-2"
-        style={{ color: 'var(--color-text-secondary)' }}
-      >
-        {label}
-      </label>
-      <div className="relative">
-        <select
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-full px-4 py-3 rounded-xl text-sm appearance-none"
-          style={{
-            background: 'var(--color-bg-hover)',
-            color: 'var(--color-text)',
-            border: '1px solid var(--color-border)',
-            outline: 'none',
-            cursor: 'pointer',
-          }}
-          onFocus={(e) => (e.currentTarget.style.borderColor = 'var(--color-gold)')}
-          onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--color-border)')}
-        >
-          <option value="">Все</option>
-          {options.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
-        <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none" style={{ color: 'var(--color-text-muted)' }}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
-        </div>
-      </div>
-    </div>
-  );
 
   return (
     <div style={{ background: 'var(--color-bg)', minHeight: '100vh', paddingTop: '100px' }}>

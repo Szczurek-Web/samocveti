@@ -105,7 +105,7 @@ export default function GiftPickerContent({ products }: { products: Product[] })
     }
 
     return filtered.slice(0, 6);
-  }, [showResults, answers]);
+  }, [showResults, answers, products]);
 
   const resetQuiz = () => {
     setCurrentStep(0);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { formatPrice } from '@/lib/utils';
 import { useCartStore } from '@/store/cartStore';
@@ -28,7 +28,6 @@ export default function ProductContent({ product, relatedProducts, crossSellProd
     if (product) addRecent(product.id);
   }, [product, addRecent]);
 
-  if (!product) return null;
 
   const fav = isFavorite(product.id);
   const purchaseCount = product.reviewCount * 5 + Math.floor(Number(product.id) * 7);
@@ -46,16 +45,18 @@ export default function ProductContent({ product, relatedProducts, crossSellProd
     setTimeout(() => setAddedToCart(false), 2000);
   };
 
-  // Fetching recent products client-side is omitted here for brevity since it requires an API,
-  // or we can just skip rendering full recent products if it's too complex right now.
-  const [recentProducts, setRecentProducts] = useState<Product[]>([]);
+  const recentProducts = useMemo(() => {
+    if (recentIds.length === 0) return [];
 
-  useEffect(() => {
-    if (recentIds.length > 0) {
-      // In a real app, fetch from /api/products?ids=...
-      // For now, we'll just not show them or use a minimal stub if not available.
-    }
-  }, [recentIds]);
+    const pool = [product, ...relatedProducts, ...crossSellProducts];
+    const byId = new Map(pool.map((item) => [item.id, item]));
+
+    return recentIds
+      .filter((id) => id !== product.id)
+      .map((id) => byId.get(id))
+      .filter((item): item is Product => Boolean(item))
+      .slice(0, 4);
+  }, [recentIds, product, relatedProducts, crossSellProducts]);
 
   // Occasion icons mapping
   const occasionIcons: Record<string, string> = {

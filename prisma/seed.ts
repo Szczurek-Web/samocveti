@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import { categories, products } from '../src/data/products';
 
 const prisma = new PrismaClient();
@@ -36,8 +37,8 @@ async function main() {
         images: prod.images,
         categoryId: prod.category, // assuming category in product maps to category ID
         inStock: 10,
-        stone: prod.stone as any,
-        description: prod.description as any,
+        stone: prod.stone as Prisma.InputJsonValue,
+        description: prod.description as Prisma.InputJsonValue,
         tags: prod.tags,
         suitableFor: prod.suitableFor,
         occasion: prod.occasion || [],

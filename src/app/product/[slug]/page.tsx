@@ -2,23 +2,13 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import ProductContent from './ProductContent';
 import { prisma } from '@/lib/db';
-import type { Product } from '@/data/products';
+import { mapDbProduct } from '@/lib/productMapper';
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
 export const revalidate = 3600;
-
-function mapProduct(p: any): Product {
-  return {
-    ...p,
-    stone: p.stone as any,
-    description: p.description as any,
-    oldPrice: p.oldPrice || undefined,
-    type: p.type || undefined,
-  };
-}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
@@ -28,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return { title: 'Товар не найден — Samocveti' };
   }
 
-  const product = mapProduct(productRaw);
+  const product = mapDbProduct(productRaw);
 
   return {
     title: `${product.name} — купить в Samocveti`,
@@ -43,7 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export async function generateStaticParams() {
   const products = await prisma.product.findMany({ select: { slug: true } });
-  return products.map((p: any) => ({ slug: p.slug }));
+  return products.map((p) => ({ slug: p.slug }));
 }
 
 export default async function ProductPage({ params }: Props) {
@@ -52,7 +42,7 @@ export default async function ProductPage({ params }: Props) {
   const productRaw = await prisma.product.findUnique({ where: { slug } });
   if (!productRaw) notFound();
   
-  const product = mapProduct(productRaw);
+  const product = mapDbProduct(productRaw);
 
   const relatedRaw = await prisma.product.findMany({
     where: { categoryId: productRaw.categoryId, NOT: { id: productRaw.id } },
@@ -65,14 +55,14 @@ export default async function ProductPage({ params }: Props) {
 
   // Filter cross-sell based on suitableFor overlap
   const crossSellRaw = allCrossRaw
-    .filter((p: any) => p.suitableFor.some((s: string) => product.suitableFor.includes(s)))
+    .filter((p) => p.suitableFor.some((s) => product.suitableFor.includes(s)))
     .slice(0, 4);
 
   return (
     <ProductContent 
       product={product} 
-      relatedProducts={relatedRaw.map(mapProduct)} 
-      crossSellProducts={crossSellRaw.map(mapProduct)} 
+      relatedProducts={relatedRaw.map(mapDbProduct)} 
+      crossSellProducts={crossSellRaw.map(mapDbProduct)} 
     />
   );
 }

@@ -31,7 +31,10 @@ export default function CheckoutPage() {
     comment: '',
   });
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
   const giftWrapPrice = 10;
   const subtotal = getTotal();

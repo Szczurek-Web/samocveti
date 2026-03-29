@@ -14,7 +14,10 @@ export default function FavoritesContent({ products }: { products: Product[] }) 
   const addToast = useToastStore((s) => s.addToast);
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
   if (!mounted) {
     return (
