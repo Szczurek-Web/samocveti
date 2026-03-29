@@ -1,3 +1,6 @@
+import Link from 'next/link';
+import { logoutAction } from './auth/actions';
+
 export const metadata = {
   title: 'Admin Panel — Samocveti',
   robots: 'noindex, nofollow',
@@ -17,9 +20,17 @@ export default function AdminLayout({
         <div className="font-bold text-xl" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-gold)' }}>
           Samocveti Admin
         </div>
-        <nav className="flex gap-4 text-sm">
-          <a href="/admin" className="hover:text-amber-500 transition">Товары</a>
-          <a href="/" className="text-gray-400 hover:text-white transition">Вернуться на сайт →</a>
+        <nav className="flex items-center gap-4 text-sm">
+          <Link href="/admin" className="hover:text-amber-500 transition">Товары</Link>
+          <Link href="/" className="text-gray-400 hover:text-white transition">Вернуться на сайт →</Link>
+          <form action={logoutAction}>
+            <button
+              type="submit"
+              className="text-red-400 hover:text-red-300 transition"
+            >
+              Logout
+            </button>
+          </form>
         </nav>
       </header>
       <main className="p-6 max-w-7xl mx-auto">{children}</main>
