@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { adminAuth, verifyAdminSessionToken } from '@/lib/admin-auth';
+import { verifyAdminSessionToken } from '@/lib/admin-auth';
 
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
-    const token = request.cookies.get(adminAuth.ADMIN_SESSION_COOKIE)?.value;
+  if (pathname.startsWith('/admin') && pathname !== '/admin/login' && !pathname.startsWith('/admin/logout')) {
+    const token = request.cookies.get('admin-token')?.value;
     const isValid = await verifyAdminSessionToken(token);
 
     if (!isValid) {

@@ -90,7 +90,7 @@ export default function ProductForm({
 
     try {
       if (isEdit) {
-        await updateProduct(product!.id, formData);
+        await updateProduct(formData);
         showToast('Товар обновлён');
       } else {
         const result = await createProduct(formData);
@@ -123,6 +123,12 @@ export default function ProductForm({
         {/* Basic Info */}
         <div className="p-6 rounded-xl" style={{ background: '#111113', border: '1px solid rgba(255,255,255,0.06)' }}>
           <h3 className="text-sm font-semibold mb-5" style={{ color: '#d4a853' }}>Основное</h3>
+          {isEdit && (
+            <>
+              <input type="hidden" name="id" value={product!.id} />
+              <input type="hidden" name="prevSlug" value={product!.slug} />
+            </>
+          )}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className={labelCls} style={labelStyle}>Название *</label>

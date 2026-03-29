@@ -79,13 +79,16 @@ function revalidateProductPaths(slug: string) {
 }
 
 export async function createProduct(formData: FormData) {
+  await guardAdminAction();
   const data = normalizeProductPayload(formData);
 
   await prisma.product.create({ data });
   revalidateProductPaths(data.slug);
+  return { slug: data.slug };
 }
 
 export async function updateProduct(formData: FormData) {
+  await guardAdminAction();
   const id = getString(formData, 'id');
   const prevSlug = getString(formData, 'prevSlug');
   const data = normalizeProductPayload(formData);
@@ -100,6 +103,7 @@ export async function updateProduct(formData: FormData) {
     revalidatePath(`/product/${prevSlug}`);
     revalidatePath(`/admin/product/${prevSlug}`);
   }
+  return { slug: data.slug };
 }
 
 export async function deleteProduct(id: string) {

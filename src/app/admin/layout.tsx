@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { logoutAction } from './auth/actions';
 
 export const metadata = {
   title: 'Admin Panel — Samocveti',
@@ -105,20 +104,7 @@ export default function AdminLayout({
 
           <main className="p-4 md:p-8 max-w-6xl">{children}</main>
         </div>
-        <nav className="flex items-center gap-4 text-sm">
-          <Link href="/admin" className="hover:text-amber-500 transition">Товары</Link>
-          <Link href="/" className="text-gray-400 hover:text-white transition">Вернуться на сайт →</Link>
-          <form action={logoutAction}>
-            <button
-              type="submit"
-              className="text-red-400 hover:text-red-300 transition"
-            >
-              Logout
-            </button>
-          </form>
-        </nav>
-      </header>
-      <main className="p-6 max-w-7xl mx-auto">{children}</main>
+      </div>
     </div>
   );
 }

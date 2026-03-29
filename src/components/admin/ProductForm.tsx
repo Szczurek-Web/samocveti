@@ -29,7 +29,7 @@ type CategoryOption = {
 
 type ProductFormProps = {
   mode: 'new' | 'edit';
-  submitAction: (formData: FormData) => Promise<void>;
+  submitAction: (formData: FormData) => Promise<void | { slug: string }>;
   categories: CategoryOption[];
   values: ProductFormValues;
 };
@@ -63,7 +63,7 @@ function Field({
 
 export default function ProductForm({ mode, submitAction, categories, values }: ProductFormProps) {
   return (
-    <form action={submitAction} className="space-y-6 rounded-xl border border-gray-800 bg-[#121212] p-6">
+    <form action={async (formData) => { await submitAction(formData); }} className="space-y-6 rounded-xl border border-gray-800 bg-[#121212] p-6">
       {mode === 'edit' && values.id && <input type="hidden" name="id" value={values.id} />}
       {mode === 'edit' && <input type="hidden" name="prevSlug" value={values.slug} />}
 
