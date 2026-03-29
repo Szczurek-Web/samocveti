@@ -84,7 +84,7 @@ export default function CartPage() {
                 {/* Info */}
                 <div className="flex-1 min-w-0">
                   <Link
-                    href={`/product/${item.id}`}
+                    href={`/product/${item.slug ?? item.id}`}
                     className="block no-underline text-sm font-medium mb-2 truncate"
                     style={{ color: 'var(--color-text)' }}
                   >
