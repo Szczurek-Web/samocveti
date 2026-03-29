@@ -3,204 +3,105 @@
 import { prisma } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 
-const REQUIRED_FIELDS = ['name', 'slug', 'price', 'categoryId', 'description', 'images'] as const;
-
-type ProductPayload = {
-  name?: unknown;
-  slug?: unknown;
-  price?: unknown;
-  oldPrice?: unknown;
-  categoryId?: unknown;
-  inStock?: unknown;
-  stone?: unknown;
-  description?: unknown;
-  images?: unknown;
-  tags?: unknown;
-  suitableFor?: unknown;
-  occasion?: unknown;
-  isNew?: unknown;
-  isPopular?: unknown;
-  type?: unknown;
-};
-
-function toRecord(input: FormData | ProductPayload): ProductPayload {
-  if (input instanceof FormData) {
-    const entries = Array.from(input.entries());
-    return entries.reduce<ProductPayload>((acc, [key, value]) => {
-      if (key in acc) {
-        const current = acc[key as keyof ProductPayload];
-        acc[key as keyof ProductPayload] = Array.isArray(current) ? [...current, value] : [current, value];
-      } else {
-        acc[key as keyof ProductPayload] = value;
-      }
-      return acc;
-    }, {});
-  }
-
-  return input;
+function getString(formData: FormData, key: string) {
+  return String(formData.get(key) ?? '').trim();
 }
 
-function safeJsonParse<T>(value: string): T | null {
-  try {
-    return JSON.parse(value) as T;
-  } catch {
-    return null;
-  }
+function getNumberOrNull(formData: FormData, key: string) {
+  const raw = getString(formData, key);
+  if (!raw) return null;
+  const n = Number(raw);
+  return Number.isFinite(n) ? n : null;
 }
 
-function parseStringArray(value: unknown): string[] {
-  if (Array.isArray(value)) {
-    return value
-      .flatMap((item) => parseStringArray(item))
-      .filter((item, index, source) => source.indexOf(item) === index);
-  }
-
-  if (typeof value !== 'string') {
-    return [];
-  }
-
-  const trimmed = value.trim();
-  if (!trimmed) {
-    return [];
-  }
-
-  const parsed = safeJsonParse<unknown>(trimmed);
-  if (parsed && Array.isArray(parsed)) {
-    return parsed
-      .filter((item): item is string => typeof item === 'string')
-      .map((item) => item.trim())
-      .filter(Boolean);
-  }
-
-  if (trimmed.includes(',')) {
-    return trimmed
-      .split(',')
-      .map((item) => item.trim())
-      .filter(Boolean);
-  }
-
-  return [trimmed];
-}
-
-function parseJsonField(value: unknown): object {
-  if (typeof value === 'object' && value !== null) {
-    return value as object;
-  }
-
-  if (typeof value !== 'string') {
-    return {};
-  }
-
-  const parsed = safeJsonParse<unknown>(value);
-  return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? (parsed as object) : {};
-}
-
-function toNumber(value: unknown): number | null {
-  if (typeof value === 'number' && Number.isFinite(value)) {
-    return value;
-  }
-
-  if (typeof value === 'string') {
-    const normalized = value.replace(',', '.').trim();
-    if (!normalized) {
-      return null;
-    }
-    const parsed = Number(normalized);
-    return Number.isFinite(parsed) ? parsed : null;
-  }
-
-  return null;
-}
-
-function toBoolean(value: unknown): boolean {
-  if (typeof value === 'boolean') {
-    return value;
-  }
-
-  if (typeof value === 'string') {
-    const normalized = value.trim().toLowerCase();
-    return normalized === 'true' || normalized === '1' || normalized === 'on' || normalized === 'yes';
-  }
-
-  return false;
-}
-
-function normalizeSlug(value: string): string {
+function parseList(value: string) {
   return value
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '');
+    .split(/[\n,]/)
+    .map((item) => item.trim())
+    .filter(Boolean);
 }
 
-async function ensureUniqueSlug(baseSlug: string, excludeId?: string): Promise<string> {
-  let slug = baseSlug;
-  let suffix = 1;
+function normalizeProductPayload(formData: FormData) {
+  const name = getString(formData, 'name');
+  const slug = getString(formData, 'slug');
+  const price = getNumberOrNull(formData, 'price') ?? 0;
+  const oldPrice = getNumberOrNull(formData, 'oldPrice');
+  const categoryId = getString(formData, 'categoryId');
+  const inStock = getNumberOrNull(formData, 'inStock') ?? 0;
 
-  while (true) {
-    const existing = await prisma.product.findFirst({
-      where: {
-        slug,
-        ...(excludeId ? { id: { not: excludeId } } : {}),
-      },
-      select: { id: true },
-    });
+  const images = parseList(getString(formData, 'images'));
+  const tags = parseList(getString(formData, 'tags'));
+  const suitableFor = parseList(getString(formData, 'suitableFor'));
+  const occasion = parseList(getString(formData, 'occasion'));
+  const descriptionShort = parseList(getString(formData, 'descriptionShort'));
 
-    if (!existing) {
-      return slug;
-    }
+  const stone = {
+    name: getString(formData, 'stoneName'),
+    properties: getString(formData, 'stoneProperties'),
+    symbolism: getString(formData, 'stoneSymbolism'),
+  };
 
-    slug = `${baseSlug}-${suffix}`;
-    suffix += 1;
-  }
-}
-
-async function parseAndValidateProductInput(input: FormData | ProductPayload, excludeId?: string) {
-  const payload = toRecord(input);
-
-  for (const field of REQUIRED_FIELDS) {
-    const value = payload[field];
-    if (value === undefined || value === null || value === '') {
-      throw new Error(`Поле ${field} обязательно`);
-    }
-  }
-
-  const name = String(payload.name).trim();
-  const requestedSlug = normalizeSlug(String(payload.slug));
-  const price = toNumber(payload.price);
-  const categoryId = String(payload.categoryId).trim();
-  const images = parseStringArray(payload.images);
-
-  if (!name) throw new Error('Поле name обязательно');
-  if (!requestedSlug) throw new Error('Поле slug обязательно');
-  if (price === null || price < 0) throw new Error('Поле price должно быть корректным числом');
-  if (!categoryId) throw new Error('Поле categoryId обязательно');
-  if (images.length === 0) throw new Error('Поле images обязательно и должно содержать хотя бы одно изображение');
-
-  const slug = await ensureUniqueSlug(requestedSlug, excludeId);
+  const description = {
+    short: descriptionShort,
+    full: getString(formData, 'descriptionFull'),
+  };
 
   return {
     name,
     slug,
     price,
-    oldPrice: toNumber(payload.oldPrice),
+    oldPrice,
     categoryId,
-    inStock: toNumber(payload.inStock) ?? 10,
-    stone: parseJsonField(payload.stone),
-    description: parseJsonField(payload.description),
+    inStock,
     images,
-    tags: parseStringArray(payload.tags),
-    suitableFor: parseStringArray(payload.suitableFor),
-    occasion: parseStringArray(payload.occasion),
-    isNew: toBoolean(payload.isNew),
-    isPopular: toBoolean(payload.isPopular),
-    type: typeof payload.type === 'string' && payload.type.trim() ? payload.type.trim() : null,
+    tags,
+    suitableFor,
+    occasion,
+    stone,
+    description,
+    type: getString(formData, 'type') || null,
+    isNew: getString(formData, 'isNew') === 'on',
+    isPopular: getString(formData, 'isPopular') === 'on',
   };
 }
 
 function revalidateProductPaths(slug: string) {
+  revalidatePath('/');
+  revalidatePath('/catalog');
+  revalidatePath('/admin');
+  revalidatePath(`/product/${slug}`);
+  revalidatePath(`/admin/product/${slug}`);
+}
+
+export async function createProduct(formData: FormData) {
+  const data = normalizeProductPayload(formData);
+
+  await prisma.product.create({ data });
+  revalidateProductPaths(data.slug);
+}
+
+export async function updateProduct(formData: FormData) {
+  const id = getString(formData, 'id');
+  const prevSlug = getString(formData, 'prevSlug');
+  const data = normalizeProductPayload(formData);
+
+  await prisma.product.update({
+    where: { id },
+    data,
+  });
+
+  revalidateProductPaths(data.slug);
+  if (prevSlug && prevSlug !== data.slug) {
+    revalidatePath(`/product/${prevSlug}`);
+    revalidatePath(`/admin/product/${prevSlug}`);
+  }
+}
+
+export async function deleteProduct(id: string) {
+  await prisma.product.delete({
+    where: { id },
+  });
+
   revalidatePath('/admin');
   revalidatePath('/catalog');
   revalidatePath('/');
