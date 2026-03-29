@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 
 export default function HeroSection() {
@@ -18,16 +19,16 @@ export default function HeroSection() {
       style={{ background: 'var(--color-bg)' }}
     >
       {/* Background image */}
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundImage: 'url(/images/hero-bg.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          opacity: 0.25,
-          filter: 'blur(2px)',
-        }}
-      />
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="/images/hero-bg.png"
+          alt="Samocveti Hero Background"
+          fill
+          priority
+          className="object-cover opacity-25 blur-[2px]"
+          sizes="100vw"
+        />
+      </div>
       <div className="absolute inset-0 overflow-hidden">
         {/* Radial gradient */}
         <div
