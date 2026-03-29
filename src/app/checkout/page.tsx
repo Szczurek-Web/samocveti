@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useCartStore } from '@/store/cartStore';
 import { formatPrice } from '@/lib/utils';
+import { createOrder, validatePromo } from './actions';
 
 type Step = 1 | 2 | 3;
 type DeliveryType = 'delivery' | 'pickup';
@@ -22,7 +23,11 @@ export default function CheckoutPage() {
   const [giftWrap, setGiftWrap] = useState(false);
   const [promoCode, setPromoCode] = useState('');
   const [promoApplied, setPromoApplied] = useState(false);
+  const [promoDiscountRate, setPromoDiscountRate] = useState(0);
+  const [promoError, setPromoError] = useState('');
+  const [validatedPromoCode, setValidatedPromoCode] = useState('');
   const [orderNumber, setOrderNumber] = useState('');
+  const [submitError, setSubmitError] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -35,25 +40,53 @@ export default function CheckoutPage() {
 
   const giftWrapPrice = 10;
   const subtotal = getTotal();
-  const promoDiscount = promoApplied ? Math.round(subtotal * 0.1) : 0;
+  const promoDiscount = promoApplied ? Math.round(subtotal * promoDiscountRate) : 0;
   const total = subtotal + (giftWrap ? giftWrapPrice : 0) - promoDiscount;
 
   const handleSubmit = useCallback(async () => {
     if (isSubmitting) return;
     setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 1800));
-    const num = 'SC-' + Date.now().toString().slice(-6);
-    setOrderNumber(num);
-    clearCart();
+    setSubmitError('');
+    try {
+      const result = await createOrder({
+        items: items.map(i => ({ id: i.id, name: i.name, price: i.price, quantity: i.quantity, image: i.image })),
+        total,
+        customerName: formData.name,
+        customerPhone: formData.phone,
+        customerEmail: formData.email || undefined,
+        deliveryType: delivery,
+        deliveryAddress: delivery === 'delivery' ? formData.address : undefined,
+        paymentMethod: payment,
+        giftWrap,
+        comment: formData.comment || undefined,
+        promoCode: validatedPromoCode || undefined,
+        promoDiscount,
+      });
+      if (result.error) {
+        setSubmitError(result.error);
+        setIsSubmitting(false);
+        return;
+      }
+      setOrderNumber('SC-' + result.orderNumber);
+      clearCart();
+      setIsSubmitted(true);
+    } catch {
+      setSubmitError('Ошибка оформления заказа');
+    }
     setIsSubmitting(false);
-    setIsSubmitted(true);
-  }, [isSubmitting, clearCart]);
+  }, [isSubmitting, clearCart, items, total, formData, delivery, payment, giftWrap, validatedPromoCode, promoDiscount]);
 
   if (!mounted) return null;
 
-  const handleApplyPromo = () => {
-    if (promoCode.toLowerCase() === 'samocveti10' || promoCode.toLowerCase() === 'gift2024') {
+  const handleApplyPromo = async () => {
+    setPromoError('');
+    const result = await validatePromo(promoCode);
+    if (result.valid && result.discount) {
       setPromoApplied(true);
+      setPromoDiscountRate(result.discount);
+      setValidatedPromoCode(result.code || promoCode);
+    } else {
+      setPromoError(result.error || 'Неверный промокод');
     }
   };
 
@@ -527,14 +560,17 @@ export default function CheckoutPage() {
                     <span style={{ color: 'var(--color-emerald-light)' }}>−{formatPrice(promoDiscount)}</span>
                   </div>
                 ) : (
-                  <div className="promo-input-group">
-                    <input
-                      type="text"
-                      placeholder="Промокод"
-                      value={promoCode}
-                      onChange={(e) => setPromoCode(e.target.value)}
-                    />
-                    <button onClick={handleApplyPromo}>Применить</button>
+                  <div>
+                    <div className="promo-input-group">
+                      <input
+                        type="text"
+                        placeholder="Промокод"
+                        value={promoCode}
+                        onChange={(e) => { setPromoCode(e.target.value); setPromoError(''); }}
+                      />
+                      <button onClick={handleApplyPromo}>Применить</button>
+                    </div>
+                    {promoError && <p className="text-xs mt-1" style={{ color: '#ef4444' }}>{promoError}</p>}
                   </div>
                 )}
               </div>

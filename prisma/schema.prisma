@@ -51,11 +51,30 @@ model Product {
 }
 
 model Order {
-  id            String   @id @default(cuid())
-  createdAt     DateTime @default(now())
-  total         Float
-  status        String   @default("PENDING")
-  customerName  String?
-  customerEmail String?
-  items         Json
+  id              String   @id @default(cuid())
+  createdAt       DateTime @default(now())
+  total           Float
+  status          String   @default("PENDING")
+  customerName    String?
+  customerEmail   String?
+  customerPhone   String?
+  deliveryType    String   @default("delivery")
+  deliveryAddress String?
+  paymentMethod   String   @default("card")
+  giftWrap        Boolean  @default(false)
+  comment         String?
+  promoCode       String?
+  promoDiscount   Float    @default(0)
+  items           Json
+}
+
+model PromoCode {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  discount    Float    // percentage (0.1 = 10%)
+  isActive    Boolean  @default(true)
+  maxUses     Int?     // null = unlimited
+  usedCount   Int      @default(0)
+  expiresAt   DateTime?
+  createdAt   DateTime @default(now())
 }
