@@ -38,22 +38,29 @@ export default function Reviews() {
 
             {/* Quote */}
             <p
-              className="text-lg md:text-xl leading-relaxed mb-8 italic"
+              className="text-xl md:text-2xl leading-[1.8] mb-10 italic max-w-3xl mx-auto transition-all duration-300"
               style={{ color: 'var(--color-text)', fontFamily: 'var(--font-serif)' }}
             >
               &ldquo;{reviews[activeIndex].text}&rdquo;
             </p>
 
             {/* Author */}
-            <div>
-              <div className="font-semibold" style={{ color: 'var(--color-text)' }}>
-                {reviews[activeIndex].author}
-              </div>
-              {reviews[activeIndex].productName && (
-                <div className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
-                  {reviews[activeIndex].productName}
+            <div className="flex items-center justify-center gap-4">
+              <img 
+                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(reviews[activeIndex].author)}&background=1a1a1e&color=d4a853`} 
+                alt={reviews[activeIndex].author}
+                className="w-12 h-12 rounded-full ring-2 ring-amber-500/30 transition-all duration-300"
+              />
+              <div className="text-left">
+                <div className="font-semibold text-base transition-all duration-300" style={{ color: 'var(--color-text)' }}>
+                  {reviews[activeIndex].author}
                 </div>
-              )}
+                {reviews[activeIndex].productName && (
+                  <div className="text-xs mt-0.5 transition-all duration-300" style={{ color: 'var(--color-gold)' }}>
+                    Покупка: {reviews[activeIndex].productName}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 

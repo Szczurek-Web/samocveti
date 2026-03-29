@@ -26,15 +26,11 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div
-      className="group rounded-2xl overflow-hidden transition-all duration-300"
-      style={{
-        background: 'var(--color-bg-card)',
-        border: '1px solid var(--color-border)',
-      }}
+      className="group rounded-2xl overflow-hidden transition-all duration-500 relative bg-[#141414] border border-[#2a2520]"
       onMouseEnter={(e) => {
         (e.currentTarget as HTMLElement).style.transform = 'translateY(-6px)';
-        (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-card)';
-        (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border-light)';
+        (e.currentTarget as HTMLElement).style.boxShadow = '0 20px 40px -10px rgba(0,0,0,0.8)';
+        (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-gold-dark)';
       }}
       onMouseLeave={(e) => {
         (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
@@ -42,71 +38,78 @@ export default function ProductCard({ product }: ProductCardProps) {
         (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)';
       }}
     >
-      {/* Image */}
-      <Link href={`/product/${product.slug}`} className="block no-underline">
-        <div
-          className="relative h-[240px] flex items-center justify-center overflow-hidden"
-          style={{ background: 'var(--color-bg-hover)' }}
-        >
-          {/* Real product image */}
+      {/* Image Container */}
+      <div className="relative h-[280px] w-full overflow-hidden bg-[#1a1a1e]">
+        <Link href={`/product/${product.slug}`} className="block w-full h-full relative cursor-pointer">
           <Image
             src={product.images[0]}
             alt={product.name}
             fill
-            className="object-cover transition-transform duration-700 group-hover:scale-110"
+            className="object-cover transition-all duration-700 group-hover:scale-110 group-hover:opacity-60"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
-          {/* Overlay for better text readability if needed, or just for style */}
-          <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors duration-300 pointer-events-none" />
+        </Link>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/80 via-transparent to-transparent pointer-events-none" />
 
-          {/* Labels */}
-          <div className="absolute top-3 left-3 flex flex-col gap-2">
-            {product.isPopular && (
-              <span className="badge badge-hot text-xs">🔥 Хит</span>
-            )}
-            {product.isNew && <span className="badge text-xs">✨ Новинка</span>}
-            {product.oldPrice && (
-              <span className="badge-emerald badge text-xs">
-                -{Math.round((1 - product.price / product.oldPrice) * 100)}%
-              </span>
-            )}
-          </div>
+        {/* Labels Map */}
+        <div className="absolute top-3 left-3 flex flex-col gap-2 z-10">
+          {product.isPopular && <span className="badge badge-hot text-xs px-2.5 shadow-lg">🔥 Хит</span>}
+          {product.isNew && <span className="badge text-xs px-2.5 shadow-lg">✨ Новинка</span>}
+          {product.oldPrice && (
+            <span className="badge-emerald badge text-xs px-2.5 shadow-lg">
+              -{Math.round((1 - product.price / product.oldPrice) * 100)}%
+            </span>
+          )}
+        </div>
 
-          {/* Favorite button */}
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              toggleFavorite(product.id);
-              addToast(fav ? 'Удалено из избранного' : 'Добавлено в избранное');
-            }}
-            className="absolute top-3 right-3 w-9 h-9 flex items-center justify-center rounded-full transition-all duration-200"
-            style={{
-              background: 'rgba(10,10,10,0.6)',
-              backdropFilter: 'blur(8px)',
-              border: 'none',
-              cursor: 'pointer',
-              color: fav ? '#ef4444' : 'var(--color-text-muted)',
-              fontSize: '16px',
-            }}
-          >
-            {fav ? '♥' : '♡'}
-          </button>
+        {/* Rating */}
+        <div className="absolute bottom-3 left-3 flex items-center gap-1 text-[11px] font-medium z-10 text-amber-500">
+          ★ {product.rating} <span className="text-gray-400">({product.reviewCount})</span>
+        </div>
 
-          {/* Rating */}
-          <div
-            className="absolute bottom-3 right-3 flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs"
-            style={{
-              background: 'rgba(10,10,10,0.7)',
-              backdropFilter: 'blur(8px)',
-              color: 'var(--color-gold)',
-            }}
-          >
-            ★ {product.rating}
-            <span style={{ color: 'var(--color-text-muted)' }}>({product.reviewCount})</span>
+        {/* Quick Actions (Hover Overlay) */}
+        <div className="absolute inset-0 flex items-center justify-center gap-4 z-20 pointer-events-none">
+          <div className="quick-actions flex items-center gap-3 pointer-events-auto">
+            {/* Quick View */}
+            <Link
+              href={`/product/${product.slug}`}
+              className="w-12 h-12 flex items-center justify-center rounded-full bg-[#111]/80 backdrop-blur-md border border-white/10 text-xl text-white transition-all hover:bg-white hover:text-black hover:scale-110 shadow-xl"
+              title="Смотреть"
+            >
+              👁
+            </Link>
+            {/* Add to Cart */}
+            <button
+              onClick={() => {
+                addItem({
+                  id: product.id,
+                  slug: product.slug,
+                  name: product.name,
+                  price: product.price,
+                  image: product.images[0],
+                });
+                addToast('В корзине');
+              }}
+              className="w-14 h-14 flex items-center justify-center rounded-full bg-amber-500 text-2xl text-black transition-all hover:bg-amber-400 hover:scale-110 shadow-[0_0_20px_rgba(212,168,83,0.4)]"
+              title="В корзину"
+            >
+              🛒
+            </button>
+            {/* Favorite */}
+            <button
+              onClick={() => {
+                toggleFavorite(product.id);
+                addToast(fav ? 'Удалено из избранного' : 'Добавлено в избранное');
+              }}
+              className="w-12 h-12 flex items-center justify-center rounded-full bg-[#111]/80 backdrop-blur-md border border-white/10 text-xl transition-all hover:bg-white hover:scale-110 shadow-xl"
+              style={{ color: fav ? '#ef4444' : '#fafafa' }}
+              title="В избранное"
+            >
+              {fav ? '♥' : '♡'}
+            </button>
           </div>
         </div>
-      </Link>
+      </div>
 
       {/* Info */}
       <div className="p-5">
@@ -151,47 +154,17 @@ export default function ProductCard({ product }: ProductCardProps) {
           <span>Купили {purchaseCount} раз</span>
         </div>
 
-        <div className="flex items-center justify-between mt-auto">
-          <div className="flex items-center gap-2">
-            <span className="text-lg font-bold" style={{ color: 'var(--color-gold)' }}>
-              {formatPrice(product.price)}
-            </span>
+        <div className="flex items-center justify-between mt-auto pt-2">
+          <div className="flex flex-col">
             {product.oldPrice && (
-              <span className="text-sm line-through" style={{ color: 'var(--color-text-muted)' }}>
+              <span className="text-[11px] line-through text-gray-500 mb-0.5">
                 {formatPrice(product.oldPrice)}
               </span>
             )}
+            <span className="text-xl font-bold text-amber-500">
+              {formatPrice(product.price)}
+            </span>
           </div>
-          <button
-            onClick={() => {
-              addItem({
-                id: product.id,
-                slug: product.slug,
-                name: product.name,
-                price: product.price,
-                image: product.images[0],
-              });
-              addToast('Добавлено в корзину');
-            }}
-            className="w-10 h-10 flex items-center justify-center rounded-xl text-lg transition-all duration-200"
-            style={{
-              background: 'rgba(212,168,83,0.1)',
-              border: '1px solid rgba(212,168,83,0.2)',
-              color: 'var(--color-gold)',
-              cursor: 'pointer',
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.background = 'var(--color-gold)';
-              (e.currentTarget as HTMLElement).style.color = '#0a0a0a';
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.background = 'rgba(212,168,83,0.1)';
-              (e.currentTarget as HTMLElement).style.color = 'var(--color-gold)';
-            }}
-            title="В корзину"
-          >
-            +
-          </button>
         </div>
       </div>
     </div>

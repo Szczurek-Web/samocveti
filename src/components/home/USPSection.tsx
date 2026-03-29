@@ -3,24 +3,24 @@
 export default function USPSection() {
   const usps = [
     {
-      icon: '💎',
-      title: 'Натуральные камни',
-      desc: 'Только природные минералы и самоцветы из проверенных месторождений',
+      icon: '🛡️',
+      title: 'Гарантия качества',
+      desc: 'Мы ручаемся за долговечность сборки и подлинность каждого минерала',
+    },
+    {
+      icon: '🚚',
+      title: 'Быстрая доставка',
+      desc: 'Бережно и оперативно доставим ваш заказ в любую точку',
     },
     {
       icon: '✋',
       title: 'Ручная работа',
-      desc: 'Каждое изделие создано руками мастеров с многолетним опытом',
+      desc: 'Каждое изделие создается мастером индивидуально, с душой и вниманием',
     },
     {
-      icon: '🎨',
-      title: 'Уникальные изделия',
-      desc: 'Неповторимый рисунок камня — каждый подарок единственный в своём роде',
-    },
-    {
-      icon: '🏪',
-      title: 'Оффлайн-магазины',
-      desc: 'Вы можете увидеть изделия вживую в наших магазинах в Минске',
+      icon: '💎',
+      title: 'Натуральные камни',
+      desc: 'Используем только настоящие природные самоцветы с сильной энергетикой',
     },
   ];
 
@@ -51,9 +51,13 @@ export default function USPSection() {
                 (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
               }}
             >
-              <span className="text-4xl mb-4">{usp.icon}</span>
+              <div className="w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-6 relative group-hover:scale-110 transition-transform duration-500"
+                   style={{ background: 'rgba(212,168,83,0.1)', boxShadow: '0 0 20px rgba(212,168,83,0.2)' }}>
+                <div className="absolute inset-0 rounded-full border border-[var(--color-gold)] opacity-30 animate-pulse-gold pointer-events-none"></div>
+                {usp.icon}
+              </div>
               <h3
-                className="text-lg font-semibold mb-2"
+                className="text-xl font-bold mb-3"
                 style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-text)' }}
               >
                 {usp.title}

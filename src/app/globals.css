@@ -602,3 +602,64 @@ h1, h2, h3, h4, h5, h6 {
     gap: 8px;
   }
 }
+
+/* ========== LUXURY TOKENS (REDESIGN) ========= */
+.glow-gold {
+  box-shadow: 0 0 40px -10px rgba(212, 168, 83, 0.4);
+}
+
+.glow-emerald {
+  box-shadow: 0 0 40px -10px rgba(45, 107, 79, 0.5);
+}
+
+.text-glow-gold {
+  text-shadow: 0 0 20px rgba(212, 168, 83, 0.4);
+}
+
+.radial-gold-bg {
+  background: radial-gradient(circle at 50% 0%, rgba(212, 168, 83, 0.15), transparent 70%);
+}
+
+.radial-emerald-bg {
+  background: radial-gradient(circle at 100% 0%, rgba(45, 107, 79, 0.15), transparent 50%);
+}
+
+/* Enhanced Hover Effects */
+.hover-lift {
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: var(--shadow-elevated);
+}
+
+/* Quick Actions Overlay */
+.quick-actions {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.group:hover .quick-actions {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Admin Sidebar Active Links */
+.admin-nav-link {
+  color: var(--color-text-secondary);
+  background: transparent;
+  transition: all 0.2s ease-out;
+}
+
+.admin-nav-link:hover {
+  color: var(--color-text);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.admin-nav-link.active {
+  color: var(--color-gold);
+  background: rgba(212, 168, 83, 0.1);
+  border-right: 2px solid var(--color-gold);
+}
