@@ -2,9 +2,9 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { formatPrice } from '@/lib/utils';
 import { useCartStore } from '@/store/cartStore';
 import type { Product } from '@/data/products';
+import ProductCard from '@/components/catalog/ProductCard';
 
 interface QuizStep {
   id: string;
@@ -95,7 +95,6 @@ export default function GiftPickerContent({ products }: { products: Product[] })
       filtered = filtered.filter((p) => p.type === answers.type);
     }
 
-    // If too few results, relax filters
     if (filtered.length < 2) {
       filtered = products.filter((p) => p.suitableFor.includes(answers.recipient || ''));
       if (answers.budget) {
@@ -116,20 +115,14 @@ export default function GiftPickerContent({ products }: { products: Product[] })
   const progress = showResults ? 100 : ((currentStep + 1) / (quizSteps.length + 1)) * 100;
 
   return (
-    <div
-      className="min-h-screen flex flex-col"
-      style={{ background: 'var(--color-bg)', paddingTop: '100px' }}
-    >
+    <div className="pt-24 min-h-screen flex flex-col bg-[var(--color-bg)]">
       <div className="container flex-1 flex flex-col">
         {/* Header */}
         <div className="text-center mb-10">
-          <h1
-            className="text-3xl md:text-4xl font-bold mb-3"
-            style={{ fontFamily: 'var(--font-serif)' }}
-          >
+          <h1 className="mb-2">
             {showResults ? '🎁 Ваша подборка' : '🎁 Подбор подарка'}
           </h1>
-          <p style={{ color: 'var(--color-text-secondary)' }}>
+          <p className="text-reading mx-auto">
             {showResults
               ? 'Мы подобрали идеальные варианты для вас'
               : 'Ответьте на несколько вопросов, и мы подберём идеальный подарок'}
@@ -137,114 +130,43 @@ export default function GiftPickerContent({ products }: { products: Product[] })
         </div>
 
         {/* Progress bar */}
-        <div
-          className="w-full max-w-xl mx-auto h-1.5 rounded-full mb-12 overflow-hidden"
-          style={{ background: 'var(--color-border)' }}
-        >
+        <div className="w-full max-w-xl mx-auto h-2 rounded-full mb-12 overflow-hidden bg-[var(--color-border)]">
           <div
-            className="h-full rounded-full transition-all duration-500"
-            style={{
-              width: `${progress}%`,
-              background: 'linear-gradient(90deg, var(--color-gold-dark), var(--color-gold))',
-            }}
+            className="h-full rounded-full transition-all duration-500 bg-[var(--color-primary)] shadow-[0_0_10px_var(--color-primary)]"
+            style={{ width: `${progress}%` }}
           />
         </div>
 
         {showResults ? (
-          /* Results */
-          <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
+          <div className="animated-fadeIn w-full max-w-6xl mx-auto">
             {results.length > 0 ? (
               <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
-                  {results.map((product, i) => (
-                    <div
-                      key={product.id}
-                      className="rounded-2xl overflow-hidden transition-all duration-300"
-                      style={{
-                        background: 'var(--color-bg-card)',
-                        border: '1px solid var(--color-border)',
-                        animation: `slideUp 0.5s ease-out ${i * 0.1}s both`,
-                      }}
-                      onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLElement).style.transform = 'translateY(-6px)';
-                        (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-card)';
-                      }}
-                      onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
-                        (e.currentTarget as HTMLElement).style.boxShadow = 'none';
-                      }}
-                    >
-                      <Link href={`/product/${product.slug}`} className="block no-underline">
-                        <div
-                          className="relative h-[200px] flex items-center justify-center overflow-hidden group"
-                          style={{ background: 'var(--color-bg-hover)' }}
-                        >
-                          <div
-                            className="absolute inset-0 transition-transform duration-700 group-hover:scale-110"
-                            style={{
-                              backgroundImage: `url(${product.images[0]})`,
-                              backgroundSize: 'cover',
-                              backgroundPosition: 'center',
-                            }}
-                          />
-                          <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors duration-300" />
-                        </div>
-                      </Link>
-                      <div className="p-5">
-                        <div className="text-xs mb-1" style={{ color: 'var(--color-gold)' }}>
-                          {product.stone.name}
-                        </div>
-                        <Link
-                          href={`/product/${product.slug}`}
-                          className="block no-underline text-sm font-medium mb-3"
-                          style={{ color: 'var(--color-text)' }}
-                        >
-                          {product.name}
-                        </Link>
-                        <div className="flex items-center justify-between">
-                          <span className="text-lg font-bold" style={{ color: 'var(--color-gold)' }}>
-                            {formatPrice(product.price)}
-                          </span>
-                          <button
-                            onClick={() =>
-                              addItem({
-                                id: product.id,
-                                slug: product.slug,
-                                name: product.name,
-                                price: product.price,
-                                image: product.images[0],
-                              })
-                            }
-                            className="btn-primary text-sm px-4 py-2"
-                          >
-                            В корзину
-                          </button>
-                        </div>
-                      </div>
-                    </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                  {results.map((product) => (
+                    <ProductCard key={product.id} product={product} />
                   ))}
                 </div>
 
                 <div className="text-center">
-                  <button onClick={resetQuiz} className="btn-secondary px-8 py-3">
-                    Подобрать снова
+                  <button onClick={resetQuiz} className="btn-secondary px-8">
+                    Собрать новую подборку
                   </button>
                 </div>
               </>
             ) : (
-              <div className="text-center py-16">
-                <span className="text-6xl mb-6 block">😔</span>
-                <h3 className="text-xl font-bold mb-3" style={{ fontFamily: 'var(--font-serif)' }}>
+              <div className="text-center py-16 card mx-auto max-w-2xl bg-[var(--color-surface)]">
+                <span className="text-6xl mb-6 block opacity-50">😔</span>
+                <h3 className="text-xl mb-4">
                   К сожалению, точных совпадений не нашлось
                 </h3>
-                <p className="mb-6" style={{ color: 'var(--color-text-secondary)' }}>
+                <p className="mb-8 text-reading mx-auto">
                   Попробуйте изменить параметры или посмотрите весь каталог
                 </p>
-                <div className="flex gap-4 justify-center">
-                  <button onClick={resetQuiz} className="btn-secondary px-6 py-3">
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <button onClick={resetQuiz} className="btn-secondary w-full sm:w-auto">
                     Попробовать снова
                   </button>
-                  <Link href="/catalog" className="btn-primary px-6 py-3">
+                  <Link href="/catalog" className="btn-primary w-full sm:w-auto">
                     Весь каталог
                   </Link>
                 </div>
@@ -252,95 +174,56 @@ export default function GiftPickerContent({ products }: { products: Product[] })
             )}
           </div>
         ) : (
-          /* Quiz steps */
-          <div className="max-w-3xl mx-auto w-full">
+          <div className="max-w-4xl mx-auto w-full">
             {quizSteps.map((step, stepIndex) => (
               <div
                 key={step.id}
                 style={{
                   display: stepIndex === currentStep ? 'block' : 'none',
-                  animation: 'fadeIn 0.4s ease-out',
+                  animation: 'fadeIn var(--transition-page) both',
                 }}
               >
                 {/* Step number */}
-                <div className="text-center mb-8">
-                  <span
-                    className="inline-block text-xs font-semibold tracking-wider uppercase px-4 py-2 rounded-full mb-4"
-                    style={{
-                      background: 'rgba(212,168,83,0.1)',
-                      color: 'var(--color-gold)',
-                      border: '1px solid rgba(212,168,83,0.2)',
-                    }}
-                  >
+                <div className="text-center mb-10">
+                  <span className="badge badge-primary mb-4 text-[12px] uppercase tracking-widest px-4 py-2">
                     Шаг {stepIndex + 1} из {quizSteps.length}
                   </span>
-                  <h2
-                    className="text-2xl md:text-3xl font-bold"
-                    style={{ fontFamily: 'var(--font-serif)' }}
-                  >
-                    {step.question}
-                  </h2>
+                  <h2>{step.question}</h2>
                 </div>
 
                 {/* Options */}
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                   {step.options.map((option) => (
                     <button
                       key={option.value}
                       onClick={() => handleSelect(step.id, option.value)}
-                      className="flex flex-col items-center justify-center p-6 md:p-8 rounded-2xl transition-all duration-300"
+                      className="card cursor-pointer flex flex-col items-center justify-center p-8 transition-all hover:scale-[1.03] active:scale-95"
                       style={{
-                        background:
-                          answers[step.id] === option.value
-                            ? 'rgba(212,168,83,0.1)'
-                            : 'var(--color-bg-card)',
-                        border:
-                          answers[step.id] === option.value
-                            ? '2px solid var(--color-gold)'
-                            : '1px solid var(--color-border)',
-                        cursor: 'pointer',
-                      }}
-                      onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-gold-dark)';
-                        (e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)';
-                      }}
-                      onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLElement).style.borderColor =
-                          answers[step.id] === option.value ? 'var(--color-gold)' : 'var(--color-border)';
-                        (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
+                        background: answers[step.id] === option.value ? 'rgba(212,168,83,0.1)' : 'var(--color-surface)',
+                        borderColor: answers[step.id] === option.value ? 'var(--color-primary)' : 'var(--color-border)',
+                        color: 'white',
                       }}
                     >
-                      <span className="text-3xl mb-3">{option.icon}</span>
-                      <span className="text-sm font-medium" style={{ color: 'var(--color-text)' }}>
-                        {option.label}
-                      </span>
+                      <span className="text-4xl mb-4">{option.icon}</span>
+                      <span className="font-semibold">{option.label}</span>
                     </button>
                   ))}
                 </div>
 
                 {/* Back button */}
-                {stepIndex > 0 && (
-                  <div className="text-center mt-8">
-                    <button
-                      onClick={() => setCurrentStep(currentStep - 1)}
-                      className="text-sm"
-                      style={{
-                        color: 'var(--color-text-muted)',
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                      }}
-                    >
+                <div className="text-center mt-12 min-h-12">
+                  {stepIndex > 0 && (
+                    <button onClick={() => setCurrentStep(currentStep - 1)} className="btn-tertiary text-gray-400">
                       ← Назад
                     </button>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             ))}
           </div>
         )}
 
-        <div className="h-20" />
+        <div className="h-24" />
       </div>
     </div>
   );

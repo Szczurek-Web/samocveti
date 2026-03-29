@@ -7,20 +7,14 @@ export default function Reviews() {
   const [activeIndex, setActiveIndex] = useState(0);
 
   return (
-    <section className="section" style={{ background: 'var(--color-bg)' }}>
+    <section className="section bg-transparent">
       <div className="container">
-        <h2 className="section-title">Отзывы наших клиентов</h2>
-        <p className="section-subtitle">Что говорят те, кто уже выбрал подарок у нас</p>
+        <h2 className="text-center mb-2">Отзывы клиентов</h2>
+        <p className="text-center text-reading mx-auto mb-10">Что говорят те, кто уже выбрал подарок у нас</p>
 
         <div className="max-w-4xl mx-auto">
           {/* Main review */}
-          <div
-            className="p-8 md:p-12 rounded-2xl mb-8 text-center"
-            style={{
-              background: 'var(--color-bg-card)',
-              border: '1px solid var(--color-border)',
-            }}
-          >
+          <div className="card text-center p-8 md:p-12 mb-8 animated-fadeIn" style={{ animation: 'fadeIn var(--transition-page) both' }}>
             {/* Stars */}
             <div className="flex justify-center gap-1 mb-6">
               {Array.from({ length: 5 }).map((_, j) => (
@@ -28,7 +22,7 @@ export default function Reviews() {
                   key={j}
                   className="text-xl"
                   style={{
-                    color: j < reviews[activeIndex].rating ? 'var(--color-gold)' : 'var(--color-text-muted)',
+                    color: j < reviews[activeIndex].rating ? 'var(--color-primary)' : 'var(--color-border)',
                   }}
                 >
                   ★
@@ -37,27 +31,25 @@ export default function Reviews() {
             </div>
 
             {/* Quote */}
-            <p
-              className="text-xl md:text-2xl leading-[1.8] mb-10 italic max-w-3xl mx-auto transition-all duration-300"
-              style={{ color: 'var(--color-text)', fontFamily: 'var(--font-serif)' }}
-            >
+            <p className="text-xl md:text-2xl leading-relaxed mb-8 italic max-w-3xl mx-auto font-serif" style={{ color: 'var(--color-text-primary)' }}>
               &ldquo;{reviews[activeIndex].text}&rdquo;
             </p>
 
             {/* Author */}
             <div className="flex items-center justify-center gap-4">
               <img 
-                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(reviews[activeIndex].author)}&background=1a1a1e&color=d4a853`} 
+                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(reviews[activeIndex].author)}&background=141414&color=ffffff&rounded=true`} 
                 alt={reviews[activeIndex].author}
-                className="w-12 h-12 rounded-full ring-2 ring-amber-500/30 transition-all duration-300"
+                className="w-12 h-12 rounded-full"
+                style={{ border: '2px solid var(--color-border)' }}
               />
-              <div className="text-left">
-                <div className="font-semibold text-base transition-all duration-300" style={{ color: 'var(--color-text)' }}>
+              <div className="text-left flex flex-col justify-center">
+                <div className="font-semibold text-base" style={{ color: 'var(--color-text-primary)' }}>
                   {reviews[activeIndex].author}
                 </div>
                 {reviews[activeIndex].productName && (
-                  <div className="text-xs mt-0.5 transition-all duration-300" style={{ color: 'var(--color-gold)' }}>
-                    Покупка: {reviews[activeIndex].productName}
+                  <div className="text-xs mt-1" style={{ color: 'var(--color-primary)' }}>
+                    {reviews[activeIndex].productName}
                   </div>
                 )}
               </div>
@@ -65,18 +57,19 @@ export default function Reviews() {
           </div>
 
           {/* Dots */}
-          <div className="flex justify-center gap-3">
+          <div className="flex justify-center gap-4">
             {reviews.map((_, i) => (
               <button
                 key={i}
                 onClick={() => setActiveIndex(i)}
-                className="w-3 h-3 rounded-full transition-all duration-300"
+                className="w-2 h-2 p-0 rounded-full transition-all duration-300"
                 style={{
-                  background: i === activeIndex ? 'var(--color-gold)' : 'var(--color-border-light)',
+                  background: i === activeIndex ? 'var(--color-primary)' : 'var(--color-border)',
                   cursor: 'pointer',
                   border: 'none',
-                  transform: i === activeIndex ? 'scale(1.3)' : 'scale(1)',
+                  transform: i === activeIndex ? 'scale(1.5)' : 'scale(1)',
                 }}
+                aria-label={`Отзыв ${i + 1}`}
               />
             ))}
           </div>

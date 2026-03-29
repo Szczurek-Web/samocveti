@@ -8,6 +8,7 @@ import { useFavoritesStore } from '@/store/favoritesStore';
 import { useRecentStore } from '@/store/recentStore';
 import { useToastStore } from '@/store/toastStore';
 import type { Product } from '@/data/products';
+import ProductCard from '@/components/catalog/ProductCard';
 
 interface Props {
   product: Product;
@@ -19,7 +20,6 @@ export default function ProductContent({ product, relatedProducts, crossSellProd
   const addItem = useCartStore((s) => s.addItem);
   const { toggleFavorite, isFavorite } = useFavoritesStore();
   const addRecent = useRecentStore((s) => s.addRecent);
-  const recentIds = useRecentStore((s) => s.recentIds);
   const addToast = useToastStore((s) => s.addToast);
   const [showFullDesc, setShowFullDesc] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
@@ -47,18 +47,6 @@ export default function ProductContent({ product, relatedProducts, crossSellProd
     setTimeout(() => setAddedToCart(false), 2000);
   };
 
-  // Fetching recent products client-side is omitted here for brevity since it requires an API,
-  // or we can just skip rendering full recent products if it's too complex right now.
-  const [recentProducts, setRecentProducts] = useState<Product[]>([]);
-
-  useEffect(() => {
-    if (recentIds.length > 0) {
-      // In a real app, fetch from /api/products?ids=...
-      // For now, we'll just not show them or use a minimal stub if not available.
-    }
-  }, [recentIds]);
-
-  // Occasion icons mapping
   const occasionIcons: Record<string, string> = {
     'День рождения': '🎂',
     'Юбилей': '🏆',
@@ -73,48 +61,36 @@ export default function ProductContent({ product, relatedProducts, crossSellProd
   };
 
   return (
-    <div style={{ background: 'var(--color-bg)', minHeight: '100vh', paddingTop: '100px' }}>
+    <div className="pt-24 pb-20 min-h-screen bg-[var(--color-bg)]">
       <div className="container">
         {/* Breadcrumbs */}
-        <nav className="flex items-center gap-2 text-sm mb-8" style={{ color: 'var(--color-text-muted)' }}>
-          <Link href="/" className="no-underline hover:underline" style={{ color: 'inherit' }}>
-            Главная
-          </Link>
+        <nav className="flex items-center gap-2 text-small mb-8 text-gray-500">
+          <Link href="/" className="hover:text-white transition-colors">Главная</Link>
           <span>/</span>
-          <Link href="/catalog" className="no-underline hover:underline" style={{ color: 'inherit' }}>
-            Каталог
-          </Link>
+          <Link href="/catalog" className="hover:text-white transition-colors">Каталог</Link>
           <span>/</span>
-          <span style={{ color: 'var(--color-text-secondary)' }}>{product.name}</span>
+          <span className="text-[var(--color-text-secondary)]">{product.name}</span>
         </nav>
 
         {/* Main section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
           {/* Gallery */}
-          <div>
-            <div
-              className="relative rounded-2xl overflow-hidden mb-4 flex items-center justify-center group"
-              style={{
-                background: 'var(--color-bg-card)',
-                border: '1px solid var(--color-border)',
-                height: '500px',
-              }}
-            >
-              {/* Main product image overlay */}
+          <div className="flex flex-col gap-4">
+            <div className="relative rounded-[calc(var(--radius-card)+8px)] overflow-hidden h-[500px] border border-[var(--color-border)] group bg-[var(--color-surface)]">
               <div
-                className="absolute inset-0 transition-transform duration-1000 group-hover:scale-110"
+                className="absolute inset-0 transition-transform duration-700 group-hover:scale-105"
                 style={{
                   backgroundImage: `url(${product.images[0]})`,
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',
                 }}
               />
-              <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-500" />
-              <div className="absolute top-4 left-4 flex flex-col gap-2">
-                {product.isPopular && <span className="badge badge-hot">🔥 Хит подарков</span>}
-                {product.isNew && <span className="badge">✨ Новинка</span>}
+              <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500" />
+              <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
+                {product.isPopular && <span className="badge badge-error">🔥 Хит подарков</span>}
+                {product.isNew && <span className="badge badge-primary">✨ Новинка</span>}
                 {product.oldPrice && (
-                  <span className="badge-emerald badge">
+                  <span className="badge badge-success">
                     -{Math.round((1 - product.price / product.oldPrice) * 100)}% скидка
                   </span>
                 )}
@@ -124,28 +100,18 @@ export default function ProductContent({ product, relatedProducts, crossSellProd
                   toggleFavorite(product.id);
                   addToast(fav ? 'Удалено из избранного' : 'Добавлено в избранное');
                 }}
-                className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200"
-                style={{
-                  background: 'rgba(10,10,10,0.6)',
-                  backdropFilter: 'blur(8px)',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: fav ? '#ef4444' : 'var(--color-text-muted)',
-                  fontSize: '20px',
-                }}
+                className="absolute top-4 right-4 w-12 h-12 flex items-center justify-center rounded-full bg-black/50 backdrop-blur-md border border-white/10 transition-colors hover:bg-black/80 z-10"
+                style={{ color: fav ? 'var(--color-error)' : 'white' }}
               >
                 {fav ? '♥' : '♡'}
               </button>
             </div>
-            <div className="flex gap-3 mt-4">
+            
+            <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
               {product.images.map((img, i) => (
                 <div
                   key={i}
-                  className="relative w-24 h-24 rounded-xl flex items-center justify-center cursor-pointer transition-all duration-200 overflow-hidden"
-                  style={{
-                    background: 'var(--color-bg-card)',
-                    border: i === 0 ? '2px solid var(--color-gold)' : '1px solid var(--color-border)',
-                  }}
+                  className="relative w-24 h-24 rounded-xl flex-shrink-0 cursor-pointer overflow-hidden border border-[var(--color-border)]"
                 >
                   <div
                     className="absolute inset-0 transition-transform duration-300 hover:scale-110"
@@ -155,104 +121,68 @@ export default function ProductContent({ product, relatedProducts, crossSellProd
                       backgroundPosition: 'center',
                     }}
                   />
-                  {i !== 0 && (
-                    <div className="absolute inset-0 bg-black/20 hover:bg-black/0 transition-colors duration-300" />
-                  )}
                 </div>
               ))}
             </div>
           </div>
 
           {/* Info */}
-          <div>
-            <div className="text-sm mb-2" style={{ color: 'var(--color-gold)' }}>
+          <div className="flex flex-col">
+            <div className="text-small font-semibold tracking-wider uppercase mb-2 text-[var(--color-primary)]">
               {product.stone.name}
             </div>
-            <h1 className="text-2xl md:text-3xl font-bold mb-4" style={{ fontFamily: 'var(--font-serif)' }}>
-              {product.name}
-            </h1>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="flex gap-0.5">
+            <h1 className="mb-4 text-4xl lg:text-5xl">{product.name}</h1>
+            
+            <div className="flex items-center gap-3 mb-6">
+              <div className="flex text-lg" style={{ color: 'var(--color-primary)' }}>
                 {Array.from({ length: 5 }).map((_, j) => (
-                  <span key={j} style={{ color: j < Math.floor(product.rating) ? 'var(--color-gold)' : 'var(--color-text-muted)' }}>
-                    ★
-                  </span>
+                  <span key={j} className={j >= Math.floor(product.rating) ? 'opacity-30' : ''}>★</span>
                 ))}
               </div>
-              <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+              <span className="text-small">
                 {product.rating} ({product.reviewCount} отзывов)
               </span>
             </div>
 
             {/* Social proof + urgency */}
-            <div className="flex flex-wrap items-center gap-3 mb-6">
-              <div className="social-proof">
-                <span className="social-proof-dot" />
-                <span>Купили {purchaseCount} раз</span>
+            <div className="flex flex-wrap items-center gap-3 mb-8">
+              <div className="badge border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text-secondary)]">
+                Купили {purchaseCount} раз
               </div>
-              <span
-                className="text-[11px] px-2.5 py-1 rounded-full"
-                style={{
-                  background: 'rgba(251, 146, 60, 0.1)',
-                  color: '#fb923c',
-                  border: '1px solid rgba(251, 146, 60, 0.2)',
-                }}
-              >
+              <div className="badge badge-error bg-red-500/10 text-red-400 border-red-500/20">
                 Осталось {fakeStock} шт
-              </span>
-              {product.isPopular && (
-                <span
-                  className="text-[11px] px-2.5 py-1 rounded-full"
-                  style={{
-                    background: 'rgba(239, 68, 68, 0.1)',
-                    color: '#f87171',
-                    border: '1px solid rgba(239, 68, 68, 0.2)',
-                  }}
-                >
-                  Популярный товар
-                </span>
-              )}
+              </div>
             </div>
 
-            <div className="flex items-center gap-4 mb-8">
-              <span className="text-3xl font-bold" style={{ color: 'var(--color-gold)', fontFamily: 'var(--font-serif)' }}>
+            <div className="flex items-center gap-4 mb-8 pb-8 border-b border-[var(--color-border)]">
+              <span className="text-4xl font-bold flex items-center h-full text-[var(--color-text-primary)]">
                 {formatPrice(product.price)}
               </span>
               {product.oldPrice && (
-                <span className="text-xl line-through" style={{ color: 'var(--color-text-muted)' }}>
+                <span className="text-xl line-through text-[var(--color-text-secondary)]">
                   {formatPrice(product.oldPrice)}
                 </span>
               )}
             </div>
 
             {/* CTA */}
-            <div className="flex flex-col sm:flex-row gap-3 mb-8">
-              <button
-                onClick={handleAddToCart}
-                className="btn-primary flex-1 text-base py-4"
-                style={{
-                  background: addedToCart
-                    ? 'linear-gradient(135deg, var(--color-emerald), var(--color-emerald-light))'
-                    : undefined,
-                }}
-              >
-                {addedToCart ? '✓ Добавлено!' : '🛒 В корзину'}
+            <div className="flex flex-col sm:flex-row gap-4 mb-10">
+              <button onClick={handleAddToCart} className="btn-primary flex-1 h-14 text-lg">
+                {addedToCart ? '✓ В корзине' : '🛒 Добавить в корзину'}
               </button>
-              <Link href="/checkout" className="btn-secondary flex-1 text-base py-4 text-center">
+              <Link href="/checkout" className="btn-secondary flex-1 h-14 text-lg items-center justify-center flex">
                 Купить сейчас
               </Link>
             </div>
 
             {/* Specs */}
-            <div className="p-6 rounded-2xl mb-6" style={{ background: 'var(--color-bg-card)', border: '1px solid var(--color-border)' }}>
-              <h3 className="text-sm font-semibold tracking-wider uppercase mb-4" style={{ color: 'var(--color-text)' }}>
-                Характеристики
-              </h3>
-              <ul className="flex flex-col gap-2.5" style={{ listStyle: 'none', padding: 0 }}>
+            <div className="card mb-6">
+              <h3 className="text-sm tracking-wider uppercase mb-4 text-[var(--color-text-primary)]">Характеристики</h3>
+              <ul className="flex flex-col gap-3">
                 {product.description.short.map((item, i) => (
-                  <li key={i} className="flex items-center gap-3 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-                    <span style={{ color: 'var(--color-gold)' }}>✦</span>
-                    {item}
+                  <li key={i} className="flex gap-3 text-[var(--color-text-secondary)]">
+                    <span className="text-[var(--color-primary)] shrink-0">✦</span>
+                    <span>{item}</span>
                   </li>
                 ))}
               </ul>
@@ -261,25 +191,22 @@ export default function ProductContent({ product, relatedProducts, crossSellProd
             <div className="mb-6">
               <button
                 onClick={() => setShowFullDesc(!showFullDesc)}
-                className="flex items-center gap-2 text-sm font-medium transition-colors duration-200"
-                style={{ color: 'var(--color-gold)', background: 'none', border: 'none', cursor: 'pointer' }}
+                className="btn-tertiary px-0 !text-sm"
               >
                 {showFullDesc ? 'Скрыть описание ▲' : 'Подробное описание ▼'}
               </button>
               {showFullDesc && (
-                <p className="mt-4 text-sm leading-relaxed" style={{ color: 'var(--color-text-secondary)', animation: 'fadeIn 0.3s ease-out' }}>
+                <p className="mt-4 text-reading animated-fadeIn">
                   {product.description.full}
                 </p>
               )}
             </div>
 
             <div className="mb-6">
-              <h3 className="text-sm font-semibold tracking-wider uppercase mb-3" style={{ color: 'var(--color-text)' }}>
-                Кому подойдёт
-              </h3>
+              <h3 className="text-sm tracking-wider uppercase mb-4 text-[var(--color-text-primary)]">Кому подойдёт</h3>
               <div className="flex flex-wrap gap-2">
                 {product.suitableFor.map((item) => (
-                  <span key={item} className="badge">{item}</span>
+                  <span key={item} className="badge bg-[var(--color-surface)] border border-[var(--color-border)]">{item}</span>
                 ))}
               </div>
             </div>
@@ -287,235 +214,79 @@ export default function ProductContent({ product, relatedProducts, crossSellProd
         </div>
 
         {/* ===== STONE MEANING SECTION ===== */}
-        <div
-          className="p-8 md:p-12 rounded-2xl mb-10"
-          style={{
-            background: 'linear-gradient(135deg, var(--color-bg-card), var(--color-bg-elevated))',
-            border: '1px solid var(--color-border)',
-            animation: 'fadeIn 0.6s ease-out',
-          }}
-        >
-          <div className="max-w-3xl mx-auto text-center">
-            <span className="text-4xl mb-4 block">💎</span>
-            <h2 className="text-2xl font-bold mb-2" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-gold)' }}>
-              Смысл изделия — {product.stone.name}
-            </h2>
-            <p className="text-sm mb-8" style={{ color: 'var(--color-text-muted)' }}>
-              Каждый камень несёт в себе особое значение
-            </p>
-            <div className="divider my-6" />
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-              <div className="p-6 rounded-xl" style={{ background: 'rgba(212,168,83,0.04)', border: '1px solid rgba(212,168,83,0.1)' }}>
-                <span className="text-3xl block mb-3">🛡️</span>
-                <h4 className="text-xs font-semibold tracking-wider uppercase mb-3" style={{ color: 'var(--color-gold)' }}>
-                  Защита
-                </h4>
-                <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
-                  {product.stone.symbolism}
-                </p>
-              </div>
-              <div className="p-6 rounded-xl" style={{ background: 'rgba(45,107,79,0.04)', border: '1px solid rgba(45,107,79,0.1)' }}>
-                <span className="text-3xl block mb-3">⚡</span>
-                <h4 className="text-xs font-semibold tracking-wider uppercase mb-3" style={{ color: 'var(--color-emerald-light)' }}>
-                  Энергия
-                </h4>
-                <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
-                  {product.stone.properties}
-                </p>
-              </div>
-              <div className="p-6 rounded-xl" style={{ background: 'rgba(139,34,82,0.04)', border: '1px solid rgba(139,34,82,0.1)' }}>
-                <span className="text-3xl block mb-3">🔮</span>
-                <h4 className="text-xs font-semibold tracking-wider uppercase mb-3" style={{ color: '#c084a8' }}>
-                  Символика
-                </h4>
-                <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
-                  {product.stone.symbolism.split('.').slice(1).join('.').trim() || product.stone.symbolism}
-                </p>
-              </div>
-            </div>
+        <div className="card p-8 md:p-12 text-center mb-16 relative overflow-hidden group">
+          <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)]/5 to-transparent pointer-events-none" />
+          <div className="relative z-10">
+             <span className="text-5xl mb-6 block">💎</span>
+             <h2 className="mb-4 text-[var(--color-primary)]">Смысл изделия — {product.stone.name}</h2>
+             <p className="text-reading mx-auto mb-10">Каждый камень несёт в себе особое значение</p>
+             
+             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-transparent">
+               <div className="card bg-black/20 border-white/5">
+                 <span className="text-4xl mb-4 block">🛡️</span>
+                 <h4 className="text-xs tracking-wider uppercase mb-3 text-[var(--color-primary)]">Защита</h4>
+                 <p className="text-small">{product.stone.symbolism}</p>
+               </div>
+               <div className="card bg-black/20 border-white/5">
+                 <span className="text-4xl mb-4 block">⚡</span>
+                 <h4 className="text-xs tracking-wider uppercase mb-3 text-[var(--color-secondary)]">Энергия</h4>
+                 <p className="text-small">{product.stone.properties}</p>
+               </div>
+               <div className="card bg-black/20 border-white/5">
+                 <span className="text-4xl mb-4 block">🔮</span>
+                 <h4 className="text-xs tracking-wider uppercase mb-3 text-purple-400">Символика</h4>
+                 <p className="text-small">{product.stone.symbolism.split('.').slice(1).join('.').trim() || product.stone.symbolism}</p>
+               </div>
+             </div>
           </div>
         </div>
 
         {/* ===== WHEN TO GIVE SECTION ===== */}
         {product.occasion && product.occasion.length > 0 && (
-          <div
-            className="p-8 md:p-10 rounded-2xl mb-16"
-            style={{
-              background: 'var(--color-bg-card)',
-              border: '1px solid var(--color-border)',
-            }}
-          >
-            <h2 className="text-2xl font-bold mb-2 text-center" style={{ fontFamily: 'var(--font-serif)' }}>
-              Когда дарить
-            </h2>
-            <p className="text-sm text-center mb-8" style={{ color: 'var(--color-text-muted)' }}>
-              Идеальный подарок для каждого повода
-            </p>
-            <div className="flex flex-wrap justify-center gap-3">
+          <div className="mb-16">
+            <h2 className="text-center mb-4">Когда дарить</h2>
+            <p className="text-reading text-center mx-auto mb-8">Идеальный подарок для каждого повода</p>
+            <div className="flex flex-wrap justify-center gap-4">
               {product.occasion.map((occ) => (
-                <div
-                  key={occ}
-                  className="flex items-center gap-2 px-5 py-3 rounded-xl transition-all duration-200"
-                  style={{
-                    background: 'var(--color-bg-hover)',
-                    border: '1px solid var(--color-border)',
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-gold)';
-                    (e.currentTarget as HTMLElement).style.background = 'rgba(212,168,83,0.06)';
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)';
-                    (e.currentTarget as HTMLElement).style.background = 'var(--color-bg-hover)';
-                  }}
-                >
-                  <span className="text-xl">{occasionIcons[occ] || '🎁'}</span>
-                  <span className="text-sm font-medium" style={{ color: 'var(--color-text)' }}>{occ}</span>
+                <div key={occ} className="card !p-4 !flex-row items-center gap-3 hover:border-[var(--color-primary)] cursor-pointer hover:bg-[var(--color-primary)]/5">
+                  <span className="text-2xl">{occasionIcons[occ] || '🎁'}</span>
+                  <span className="font-semibold">{occ}</span>
                 </div>
               ))}
             </div>
           </div>
         )}
 
-        {/* Related products */}
+        {/* Cross-sell & Related */}
+        {crossSellProducts.length > 0 && (
+          <div className="mb-16 pt-8 border-t border-[var(--color-border)]">
+            <h2 className="mb-8">С этим покупают</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {crossSellProducts.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+          </div>
+        )}
+        
         {relatedProducts.length > 0 && (
           <div className="mb-16">
-            <h2 className="text-2xl font-bold mb-8" style={{ fontFamily: 'var(--font-serif)' }}>
-              Похожие товары
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <h2 className="mb-8">Похожие товары</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {relatedProducts.map((p) => (
-                <Link
-                  key={p.id}
-                  href={`/product/${p.slug}`}
-                  className="block no-underline rounded-2xl overflow-hidden transition-all duration-300"
-                  style={{ background: 'var(--color-bg-card)', border: '1px solid var(--color-border)' }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)'; (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-card)'; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLElement).style.boxShadow = 'none'; }}
-                >
-                  <div
-                    className="h-[180px] relative overflow-hidden flex items-center justify-center"
-                    style={{ background: 'var(--color-bg-hover)' }}
-                  >
-                    <div
-                      className="absolute inset-0 transition-transform duration-500 hover:scale-110"
-                      style={{
-                        backgroundImage: `url(${p.images[0]})`,
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                      }}
-                    />
-                  </div>
-                  <div className="p-4">
-                    <div className="text-xs mb-1" style={{ color: 'var(--color-text-muted)' }}>{p.stone.name}</div>
-                    <div className="text-sm font-medium mb-2" style={{ color: 'var(--color-text)' }}>{p.name}</div>
-                    <div className="font-bold" style={{ color: 'var(--color-gold)' }}>{formatPrice(p.price)}</div>
-                  </div>
-                </Link>
+                <ProductCard key={p.id} product={p} />
               ))}
             </div>
           </div>
         )}
 
-        {/* Cross-sell */}
-        {crossSellProducts.length > 0 && (
-          <div className="mb-16">
-            <h2 className="text-2xl font-bold mb-3" style={{ fontFamily: 'var(--font-serif)' }}>
-              С этим покупают
-            </h2>
-            <p className="mb-8 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-              Дополните подарок — вместе смотрится ещё лучше
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {crossSellProducts.map((p) => (
-                <Link
-                  key={p.id}
-                  href={`/product/${p.slug}`}
-                  className="block no-underline rounded-2xl overflow-hidden transition-all duration-300"
-                  style={{ background: 'var(--color-bg-card)', border: '1px solid var(--color-border)' }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)'; (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-card)'; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLElement).style.boxShadow = 'none'; }}
-                >
-                  <div
-                    className="h-[180px] relative overflow-hidden flex items-center justify-center"
-                    style={{ background: 'var(--color-bg-hover)' }}
-                  >
-                    <div
-                      className="absolute inset-0 transition-transform duration-500 hover:scale-110"
-                      style={{
-                        backgroundImage: `url(${p.images[0]})`,
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                      }}
-                    />
-                  </div>
-                  <div className="p-4">
-                    <div className="text-xs mb-1" style={{ color: 'var(--color-text-muted)' }}>{p.stone.name}</div>
-                    <div className="text-sm font-medium mb-2" style={{ color: 'var(--color-text)' }}>{p.name}</div>
-                    <div className="font-bold" style={{ color: 'var(--color-gold)' }}>{formatPrice(p.price)}</div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
+      </div>
 
-        {/* Recently viewed */}
-        {recentProducts.length > 0 && (
-          <div className="mb-16">
-            <h2 className="text-2xl font-bold mb-8" style={{ fontFamily: 'var(--font-serif)' }}>
-              Недавно просмотренные
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {recentProducts.map((p) => p && (
-                <Link
-                  key={p.id}
-                  href={`/product/${p.slug}`}
-                  className="block no-underline rounded-2xl overflow-hidden transition-all duration-300"
-                  style={{ background: 'var(--color-bg-card)', border: '1px solid var(--color-border)' }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)'; (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-card)'; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLElement).style.boxShadow = 'none'; }}
-                >
-                  <div
-                    className="h-[140px] relative overflow-hidden flex items-center justify-center"
-                    style={{ background: 'var(--color-bg-hover)' }}
-                  >
-                    <div
-                      className="absolute inset-0 transition-transform duration-500 hover:scale-110"
-                      style={{
-                        backgroundImage: `url(${p.images[0]})`,
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                      }}
-                    />
-                  </div>
-                  <div className="p-4">
-                    <div className="text-xs mb-1" style={{ color: 'var(--color-text-muted)' }}>{p.stone.name}</div>
-                    <div className="text-sm font-medium mb-2" style={{ color: 'var(--color-text)' }}>{p.name}</div>
-                    <div className="font-bold" style={{ color: 'var(--color-gold)' }}>{formatPrice(p.price)}</div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Mobile sticky CTA */}
-        <div
-          className="fixed bottom-0 left-0 right-0 p-4 lg:hidden z-40"
-          style={{
-            background: 'rgba(10,10,10,0.95)',
-            backdropFilter: 'blur(12px)',
-            borderTop: '1px solid var(--color-border)',
-          }}
-        >
-          <div className="flex gap-3">
-            <button onClick={handleAddToCart} className="btn-primary flex-1 py-3.5 text-sm">
-              {addedToCart ? '✓ Добавлено!' : '🛒 В корзину — ' + formatPrice(product.price)}
-            </button>
-          </div>
-        </div>
-        <div className="h-20 lg:hidden" /> {/* spacer for sticky CTA */}
+      {/* Mobile sticky CTA */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 lg:hidden z-40 bg-[var(--color-bg)]/95 backdrop-blur-md border-t border-[var(--color-border)]">
+        <button onClick={handleAddToCart} className="btn-primary w-full h-12">
+          {addedToCart ? '✓ В корзине' : `Купить за ${formatPrice(product.price)}`}
+        </button>
       </div>
     </div>
   );
