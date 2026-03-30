@@ -14,22 +14,31 @@ const categoryImages: Record<string, string> = {
 
 export default function Categories() {
   return (
-    <section className="section bg-transparent">
+    <section className="section" style={{ background: 'var(--color-bg-card)' }}>
       <div className="container">
-        <h2 className="text-center mb-2">Категории</h2>
-        <p className="text-center text-reading mx-auto mb-10">Выберите категорию изделий из натурального камня</p>
+        <h2 className="section-title">Категории</h2>
+        <p className="section-subtitle">Выберите категорию изделий из натурального камня</p>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {categories.map((cat, i) => (
             <Link
               key={cat.id}
               href={`/catalog?category=${cat.slug}`}
-              className="group relative flex flex-col items-center justify-end rounded-xl no-underline overflow-hidden transition-all duration-300 card-hover-fx"
+              className="group relative flex flex-col items-center justify-end rounded-2xl no-underline overflow-hidden transition-all duration-300"
               style={{
                 border: '1px solid var(--color-border)',
-                height: '240px',
-                animation: `fadeIn var(--transition-page) both`,
-                animationDelay: `${i * 100}ms`
+                height: '220px',
+                animation: `fadeIn 0.5s ease-out ${i * 0.1}s both`,
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.transform = 'translateY(-6px)';
+                (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-card)';
+                (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-gold-dark)';
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
+                (e.currentTarget as HTMLElement).style.boxShadow = 'none';
+                (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)';
               }}
             >
               {/* Background image */}
@@ -41,17 +50,22 @@ export default function Categories() {
                   className="object-cover transition-transform duration-500 group-hover:scale-110"
                 />
               ) : (
-                <div className="absolute inset-0 flex items-center justify-center bg-surface">
-                  <span className="text-5xl opacity-50">{cat.icon}</span>
+                <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'var(--color-bg-elevated)' }}>
+                  <span className="text-5xl md:text-6xl" style={{ opacity: 0.7 }}>{cat.icon}</span>
                 </div>
               )}
 
               {/* Overlay gradient */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+              <div
+                className="absolute inset-0"
+                style={{
+                  background: 'linear-gradient(to top, rgba(10,10,10,0.85) 0%, rgba(10,10,10,0.2) 50%, transparent 100%)',
+                }}
+              />
 
               {/* Label */}
-              <div className="relative w-full px-4 py-4 text-center z-10">
-                <span className="font-semibold text-white tracking-wide">
+              <div className="relative w-full px-4 py-4 text-center">
+                <span className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>
                   {cat.name}
                 </span>
               </div>

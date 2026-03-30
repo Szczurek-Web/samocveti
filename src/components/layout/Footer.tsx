@@ -3,87 +3,176 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
+const footerLinks = {
+  catalog: [
+    { href: '/catalog?category=paintings', label: 'Картины' },
+    { href: '/catalog?category=clocks', label: 'Часы' },
+    { href: '/catalog?category=souvenirs', label: 'Сувениры' },
+    { href: '/catalog?category=jewelry', label: 'Украшения' },
+    { href: '/catalog?category=interior', label: 'Интерьер' },
+  ],
+  info: [
+    { href: '/about', label: 'О нас' },
+    { href: '/blog', label: 'Блог' },
+    { href: '/delivery', label: 'Доставка и оплата' },
+    { href: '/contacts', label: 'Контакты' },
+    { href: '/gift-picker', label: 'Подбор подарка' },
+    { href: '/favorites', label: 'Избранное' },
+  ],
+};
+
 export default function Footer() {
   const pathname = usePathname();
   if (pathname.startsWith('/admin')) return null;
 
   return (
-    <footer style={{ background: 'var(--color-surface)', borderTop: '1px solid var(--color-border)' }}>
+    <footer
+      style={{ background: 'var(--color-bg-card)', borderTop: '1px solid var(--color-border)' }}
+    >
       <div className="container py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
-          {/* Logo & About */}
-          <div className="md:col-span-1">
-            <Link href="/" className="flex items-center gap-2 mb-6 no-underline">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+          {/* Brand */}
+          <div className="lg:col-span-1">
+            <Link href="/" className="flex items-center gap-2 no-underline mb-4">
               <span className="text-2xl">💎</span>
-              <span className="text-xl font-bold tracking-wide font-serif" style={{ color: 'var(--color-primary)' }}>
+              <span
+                className="text-xl font-semibold tracking-wide"
+                style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-gold)' }}
+              >
                 SAMOCVETI
               </span>
             </Link>
-            <p className="text-small mb-6">
-              Уникальные изделия ручной работы из натурального камня для особых случаев.
+            <p
+              className="text-sm leading-relaxed mb-6"
+              style={{ color: 'var(--color-text-secondary)' }}
+            >
+              Оригинальные подарки из натурального камня. Уникальные изделия ручной работы для
+              особых случаев.
             </p>
             {/* Socials */}
-            <div className="flex gap-4">
-              {['ВК', 'TG', 'IG'].map((social) => (
+            <div className="flex gap-3">
+              {['WhatsApp', 'Telegram', 'Instagram'].map((social) => (
                 <a
                   key={social}
                   href="#"
-                  className="w-10 h-10 flex items-center justify-center rounded-md text-small font-medium transition-colors"
-                  style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)', color: 'var(--color-text-secondary)' }}
-                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-primary)'; e.currentTarget.style.color = 'var(--color-primary)'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-border)'; e.currentTarget.style.color = 'var(--color-text-secondary)'; }}
+                  className="w-10 h-10 flex items-center justify-center rounded-xl text-sm font-medium transition-all duration-200"
+                  style={{
+                    background: 'rgba(255,255,255,0.05)',
+                    color: 'var(--color-text-secondary)',
+                    border: '1px solid var(--color-border)',
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-gold)';
+                    (e.currentTarget as HTMLElement).style.color = 'var(--color-gold)';
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)';
+                    (e.currentTarget as HTMLElement).style.color = 'var(--color-text-secondary)';
+                  }}
                 >
-                  {social}
+                  {social[0]}
                 </a>
               ))}
             </div>
           </div>
 
-          {/* Navigation */}
+          {/* Catalog links */}
           <div>
-            <h4 className="text-sm font-semibold mb-6 tracking-wider uppercase text-white">Навигация</h4>
-            <ul className="flex flex-col gap-3 list-none">
-              <li><Link href="/catalog" className="text-small hover:text-white transition-colors">Каталог</Link></li>
-              <li><Link href="/gift-picker" className="text-small hover:text-white transition-colors">Подбор подарка</Link></li>
-              <li><Link href="/about" className="text-small hover:text-white transition-colors">О нас</Link></li>
-              <li><Link href="/delivery" className="text-small hover:text-white transition-colors">Доставка</Link></li>
+            <h4
+              className="text-sm font-semibold mb-4 tracking-wider uppercase"
+              style={{ color: 'var(--color-text)', fontFamily: 'var(--font-sans)' }}
+            >
+              Каталог
+            </h4>
+            <ul className="flex flex-col gap-2.5" style={{ listStyle: 'none', padding: 0 }}>
+              {footerLinks.catalog.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-sm no-underline transition-colors duration-200"
+                    style={{ color: 'var(--color-text-secondary)' }}
+                    onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = 'var(--color-gold)')}
+                    onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = 'var(--color-text-secondary)')}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Catalog Categories */}
+          {/* Info links */}
           <div>
-            <h4 className="text-sm font-semibold mb-6 tracking-wider uppercase text-white">Категории</h4>
-            <ul className="flex flex-col gap-3 list-none">
-              <li><Link href="/catalog?category=paintings" className="text-small hover:text-white transition-colors">Картины</Link></li>
-              <li><Link href="/catalog?category=jewelry" className="text-small hover:text-white transition-colors">Украшения</Link></li>
-              <li><Link href="/catalog?category=souvenirs" className="text-small hover:text-white transition-colors">Сувениры</Link></li>
-              <li><Link href="/catalog?category=interior" className="text-small hover:text-white transition-colors">Интерьер</Link></li>
+            <h4
+              className="text-sm font-semibold mb-4 tracking-wider uppercase"
+              style={{ color: 'var(--color-text)', fontFamily: 'var(--font-sans)' }}
+            >
+              Информация
+            </h4>
+            <ul className="flex flex-col gap-2.5" style={{ listStyle: 'none', padding: 0 }}>
+              {footerLinks.info.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-sm no-underline transition-colors duration-200"
+                    style={{ color: 'var(--color-text-secondary)' }}
+                    onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = 'var(--color-gold)')}
+                    onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = 'var(--color-text-secondary)')}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Contacts */}
+          {/* Contact */}
           <div>
-            <h4 className="text-sm font-semibold mb-6 tracking-wider uppercase text-white">Контакты</h4>
+            <h4
+              className="text-sm font-semibold mb-4 tracking-wider uppercase"
+              style={{ color: 'var(--color-text)', fontFamily: 'var(--font-sans)' }}
+            >
+              Контакты
+            </h4>
             <div className="flex flex-col gap-3">
-              <p className="text-small">📍 Минск, ул. Немига, 12</p>
-              <p className="text-small hover:text-white transition-colors cursor-pointer">📞 +375 (29) 123-45-67</p>
-              <p className="text-small hover:text-white transition-colors cursor-pointer">✉️ info@samocveti.by</p>
-              <p className="text-xs mt-2" style={{ color: 'var(--color-text-secondary)', opacity: 0.7 }}>
-                Пн–Пт: 10:00 – 19:00<br/>Сб: 11:00 – 17:00
+              <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                📍 г. Минск, ул. Немига, 12
+              </p>
+              <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                📞{' '}
+                <a
+                  href="tel:+375291234567"
+                  className="no-underline transition-colors duration-200"
+                  style={{ color: 'var(--color-text-secondary)' }}
+                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = 'var(--color-gold)')}
+                  onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = 'var(--color-text-secondary)')}
+                >
+                  +375 (29) 123-45-67
+                </a>
+              </p>
+              <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                ✉️ info@samocveti.by
+              </p>
+              <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                Пн–Пт: 10:00 – 19:00
+                <br />
+                Сб: 11:00 – 17:00
               </p>
             </div>
           </div>
         </div>
 
-        {/* Copyright */}
-        <div className="mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4" style={{ borderTop: '1px solid var(--color-border)' }}>
-          <p className="text-xs" style={{ color: 'var(--color-text-secondary)', opacity: 0.7 }}>
-            © 2026 Samocveti. Все права защищены.
+        {/* Bottom bar */}
+        <div
+          className="mt-12 pt-8 flex flex-col md:flex-row items-center justify-between gap-4"
+          style={{ borderTop: '1px solid var(--color-border)' }}
+        >
+          <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+            © 2025 Samocveti. Все права защищены.
           </p>
-          <div className="flex gap-6">
-            <Link href="/privacy" className="text-xs hover:text-white transition-colors" style={{ color: 'var(--color-text-secondary)', opacity: 0.7 }}>Политика конфиденциальности</Link>
-            <Link href="/terms" className="text-xs hover:text-white transition-colors" style={{ color: 'var(--color-text-secondary)', opacity: 0.7 }}>Пользовательское соглашение</Link>
-          </div>
+          <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+            Политика конфиденциальности
+          </p>
         </div>
       </div>
     </footer>
